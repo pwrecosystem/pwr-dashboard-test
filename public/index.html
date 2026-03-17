@@ -3,299 +3,719 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vencimientos - PWR Club</title>
+  <title>Clientes Sin Plan Activo - PWR Club</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --primary: #ec0101;
-      --dark: #222222;
-      --gray: #333333;
-      --white: #ffffff;
-      --light-gray: #f5f5f5;
-    }
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: 'Montserrat', sans-serif;
-      background: var(--light-gray);
-      min-height: 100vh;
-    }
-    
-    header {
-      background: var(--dark);
-      padding: 1rem 2rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-    
-    header img {
-      height: 50px;
-    }
-    
-    header h1 {
-      color: var(--white);
-      font-size: 1.5rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-    
-    header h1 span {
-      color: var(--primary);
-    }
-    
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
-    
-    .filters {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
-    }
-    
-    .filters input, .filters button {
-      padding: 0.75rem 1rem;
-      border: 2px solid var(--gray);
-      border-radius: 8px;
-      font-family: inherit;
-      font-size: 0.9rem;
-    }
-    
-    .filters button {
-      background: var(--primary);
-      color: var(--white);
-      border: none;
-      cursor: pointer;
-      font-weight: 600;
-      text-transform: uppercase;
-      transition: transform 0.2s;
-    }
-    
-    .filters button:hover {
-      transform: scale(1.02);
-    }
-    
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
-    
-    .stat-card {
-      background: var(--white);
-      border-radius: 16px;
-      padding: 2rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-      border-left: 5px solid var(--primary);
-    }
-    
-    .stat-card h3 {
-      color: var(--gray);
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 0.5rem;
-    }
-    
-    .stat-card .number {
-      font-size: 2.5rem;
-      font-weight: 800;
-      color: var(--dark);
-    }
-    
-    .stat-card .amount {
-      font-size: 1.2rem;
-      color: var(--gray);
-      margin-top: 0.5rem;
-    }
-    
-    .section-title {
-      color: var(--dark);
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin: 2rem 0 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 3px solid var(--primary);
-      display: inline-block;
-    }
-    
-    table {
-      width: 100%;
-      background: var(--white);
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-    
-    th {
-      background: var(--dark);
-      color: var(--white);
-      padding: 1rem;
-      text-align: left;
-      font-weight: 600;
-      text-transform: uppercase;
-      font-size: 0.8rem;
-      letter-spacing: 1px;
-    }
-    
-    td {
-      padding: 1rem;
-      border-bottom: 1px solid #eee;
-    }
-    
-    tr:hover {
-      background: #fafafa;
-    }
-    
-    .badge {
-      display: inline-block;
-      padding: 0.25rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-    
-    .badge-march { background: #fff3cd; color: #856404; }
-    .badge-april { background: #d4edda; color: #155724; }
-    
-    .loading {
-      text-align: center;
-      padding: 3rem;
-      color: var(--gray);
-    }
-    
-    @media (max-width: 768px) {
-      .container { padding: 1rem; }
-      .stats { grid-template-columns: 1fr; }
-      table { display: block; overflow-x: auto; }
-    }
+    :root { --primary: #ec0101; --dark: #222222; --gray: #333; --white: #fff; --light-gray: #f5f5f5; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Montserrat', sans-serif; background: var(--light-gray); min-height: 100vh; }
+    header { background: var(--dark); padding: 1rem 2rem; display: flex; align-items: center; gap: 1rem; }
+    header img { height: 50px; }
+    header h1 { color: var(--white); font-size: 1.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
+    header h1 span { color: var(--primary); }
+    .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+    .info-box { background: #fee2e2; border: 1px solid #991b1b; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; color: #991b1b; }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+    .stat-card { background: var(--white); border-radius: 16px; padding: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border-left: 5px solid var(--primary); }
+    .stat-card h3 { color: var(--gray); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+    .stat-card .number { font-size: 2.5rem; font-weight: 800; color: var(--dark); }
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+    .badge-fecha { background: #fef3c7; color: #92400e; }
+    .badge-sede { background: #e0e7ff; color: #3730a3; }
+    table { width: 100%; background: var(--white); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    th { background: var(--dark); color: var(--white); padding: 1rem; text-align: left; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; }
+    td { padding: 0.75rem 1rem; border-bottom: 1px solid #eee; font-size: 0.85rem; }
+    tr:hover { background: #fafafa; }
+    .contact-info { font-size: 0.8rem; color: var(--gray); }
+    @media (max-width: 768px) { .container { padding: 1rem; } .stats { grid-template-columns: 1fr; } table { display: block; overflow-x: auto; } }
   </style>
 </head>
 <body>
   <header>
     <img src="https://powerclub.com.co/cdn/shop/files/Logo_PWR_redes_sociales.jpg?v=1722338689" alt="PWR Club">
-    <h1>PWR <span>Club</span></h1>
+    <h1>PWR <span>Club</span> - Clientes Sin Plan Activo</h1>
   </header>
-  
   <div class="container">
-    <div class="filters">
-      <input type="date" id="fechai" value="2026-03-01">
-      <input type="date" id="fechaf" value="2026-04-30">
-      <button onclick="loadData()">Actualizar</button>
-    </div>
-    
+    <div class="info-box"><strong>📊 Clientes con facturas vencidas en marzo 2026 que NO tienen otro plan activo después de su fecha de vencimiento.</strong></div>
     <div class="stats">
-      <div class="stat-card">
-        <h3>Marzo 2026</h3>
-        <div class="number" id="marzo-count">-</div>
-        <div class="amount" id="marzo-amount">-</div>
-      </div>
-      <div class="stat-card">
-        <h3>Abril 2026</h3>
-        <div class="number" id="abril-count">-</div>
-        <div class="amount" id="abril-amount">-</div>
-      </div>
-      <div class="stat-card">
-        <h3>Total Vencimientos</h3>
-        <div class="number" id="total-count">-</div>
-        <div class="amount" id="total-amount">-</div>
-      </div>
+      <div class="stat-card"><h3>Total Clientes</h3><div class="number">84</div></div>
+      <div class="stat-card"><h3>Total Valor Facturas</h3><div class="number">$59,966,000</div></div>
     </div>
-    
-    <h2 class="section-title">Detalle de Vencimientos</h2>
-    <div id="table-container">
-      <div class="loading">Cargando datos...</div>
-    </div>
-  </div>
-  
-  <script>
-    function formatCurrency(amount) {
-      return new Intl.NumberFormat('es-CO', { 
-        style: 'currency', 
-        currency: 'COP',
-        minimumFractionDigits: 0
-      }).format(amount)
-    }
-    
-    async function loadData() {
-      const fechai = document.getElementById('fechai').value
-      const fechaf = document.getElementById('fechaf').value
-      
-      document.getElementById('table-container').innerHTML = '<div class="loading">Cargando datos...</div>'
-      
-      try {
-        const res = await fetch(`/api/vencimientos?fechai=${fechai}&fechaf=${fechaf}`)
-        const data = await res.json()
-        
-        if (data.error) {
-          document.getElementById('table-container').innerHTML = `<div class="loading">Error: ${data.error}</div>`
-          return
-        }
-        
-        const { totales, detalle } = data
-        
-        document.getElementById('marzo-count').textContent = totales.marzo.cantidad
-        document.getElementById('marzo-amount').textContent = formatCurrency(totales.marzo.valor)
-        document.getElementById('abril-count').textContent = totales.abril.cantidad
-        document.getElementById('abril-amount').textContent = formatCurrency(totales.abril.valor)
-        
-        const totalCant = totales.marzo.cantidad + totales.abril.cantidad
-        const totalVal = totales.marzo.valor + totales.abril.valor
-        document.getElementById('total-count').textContent = totalCant
-        document.getElementById('total-amount').textContent = formatCurrency(totalVal)
-        
-        const allItems = [...detalle.marzo, ...detalle.abril].slice(0, 100)
-        
-        const tableHtml = `
-          <table>
-            <thead>
-              <tr>
-                <th>Fecha Venc.</th>
-                <th>Cliente</th>
-                <th>Identificación</th>
-                <th>Sede</th>
-                <th>Valor</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${allItems.map(f => `
-                <tr>
-                  <td>
-                    <span class="badge ${f.fecha_vencimiento.startsWith('2026-03') ? 'badge-march' : 'badge-april'}">
-                      ${f.fecha_vencimiento}
-                    </span>
-                  </td>
-                  <td>${f.nombre_cliente}</td>
-                  <td>${f.identificacion_cliente}</td>
-                  <td>${f.sucursal_codigo}</td>
-                  <td>${formatCurrency(f.total)}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-          <p style="margin-top:1rem;color:var(--gray);font-size:0.9rem">Mostrando primeros 100 registros</p>
-        `
-        
-        document.getElementById('table-container').innerHTML = tableHtml
-        
-      } catch (err) {
-        document.getElementById('table-container').innerHTML = `<div class="loading">Error: ${err.message}</div>`
-      }
-    }
-    
-    loadData()
-  </script>
-</body>
-</html>
+    <table>
+      <thead>
+        <tr><th>Fecha Venc.</th><th>Cliente</th><th>ID</th><th>Teléfono</th><th>Correo</th><th>Sede</th><th>Valor</th></tr>
+      </thead>
+      <tbody><tr>
+        <td><span class="badge badge-fecha">2026-03-02</span></td>
+        <td>DIANA CRUZ</td>
+        <td>1013590794</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$120,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-02</span></td>
+        <td>PABLO VACA</td>
+        <td>1019054438</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$2,150,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-02</span></td>
+        <td>FELIPE   CASTAÑO</td>
+        <td>1037628893</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$175,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-02</span></td>
+        <td>JULIANA  CASTRO</td>
+        <td>1037655559</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$1,350,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-02</span></td>
+        <td>ESTEBAN QUEVEDO GALLO</td>
+        <td>1152220591</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$2,220,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-02</span></td>
+        <td>VALENTINA BARRERA PALACIO</td>
+        <td>1152458220</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$195,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-02</span></td>
+        <td>MATTHEW WILLIAM CLARKE</td>
+        <td>444582</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$480,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-02</span></td>
+        <td>CAMILO DIAZ</td>
+        <td>8126845</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$283,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-03</span></td>
+        <td>ALEJANDRA    ACEVEDO</td>
+        <td>1037585774</td>
+        <td>3148469987</td>
+        <td class="contact-info">aacevedo8a@gmail.com</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$195,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-03</span></td>
+        <td>Maria Camila Mejia Castañeda</td>
+        <td>1037659136</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$2,220,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-03</span></td>
+        <td>PAULA ANDREA SALAZAR  GONZALEZ</td>
+        <td>1041232969</td>
+        <td>3103741208</td>
+        <td class="contact-info">paulis.salazar95@gmail.com</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$258,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-03</span></td>
+        <td>JENNY  VILLADA</td>
+        <td>29568299</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$120,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-04</span></td>
+        <td>ESTEFANIA  GOMEZ</td>
+        <td>1018484389</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$1,760,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-04</span></td>
+        <td>DANIELA HENAO RENDON</td>
+        <td>1152446885</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$165,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-04</span></td>
+        <td>clara  gisande</td>
+        <td>924264</td>
+        <td>3504684541</td>
+        <td class="contact-info">cgisanda@gmail.com</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$120,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-04</span></td>
+        <td>ALEJANDRO MESA VASQUEZ</td>
+        <td>98672488</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$440,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-05</span></td>
+        <td>JUAN FELIPE ARBELAEZ</td>
+        <td>1036682763</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$120,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-05</span></td>
+        <td>NICOLE CANO</td>
+        <td>1042242929</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$258,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-05</span></td>
+        <td>ESTEFANIA  COTRINI JIMENEZ</td>
+        <td>1053931692</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$90,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-05</span></td>
+        <td>DANIELA HENAO RENDON</td>
+        <td>1152446885</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$93,500</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-05</span></td>
+        <td>FERNANDO GONZALEZ SAY</td>
+        <td>196955033</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$195,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-06</span></td>
+        <td>DAVID GIRALDO URIBE</td>
+        <td>1017247757</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$208,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-06</span></td>
+        <td>MARIA PAULINA GAVIRIA RADA</td>
+        <td>1037647715</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$195,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-06</span></td>
+        <td>LUISA FERNANDA  GOMEZ  ARIAS</td>
+        <td>1038415108</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$258,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-06</span></td>
+        <td>VERONICA VELEZ</td>
+        <td>1128404664</td>
+        <td>3104732639</td>
+        <td class="contact-info">velez.veronica86@gmail.com</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$175,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-06</span></td>
+        <td>DANIELA HENAO RENDON</td>
+        <td>1152446885</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$99,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-06</span></td>
+        <td>LAURA  ARANGO</td>
+        <td>1152449122</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$195,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-06</span></td>
+        <td>carolina  arango</td>
+        <td>1152449123</td>
+        <td>3104517148</td>
+        <td class="contact-info">carolina.arangoa11@gmail.com</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$195,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-06</span></td>
+        <td>ZULY   GONZALEZ  YEPES</td>
+        <td>32180653</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$160,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-06</span></td>
+        <td>ALEJANDRA  MESA</td>
+        <td>43222057</td>
+        <td>3104295041</td>
+        <td class="contact-info">alejandramesa.arango@gmail.com</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$120,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-07</span></td>
+        <td>JUAN SEBASTIAN VALLEJO</td>
+        <td>1000547413</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$90,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-07</span></td>
+        <td>LAURA RESTREPO PUERTA</td>
+        <td>1036618742</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$120,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-07</span></td>
+        <td>Maria isabel  carvajal</td>
+        <td>1037574842</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$120,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-07</span></td>
+        <td>FEDERICO VELEZ HENAO</td>
+        <td>1037625738</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$1,970,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-09</span></td>
+        <td>ERIKA GOMEZ CEBALLOS</td>
+        <td>1017209060</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$175,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-09</span></td>
+        <td>LAURA RESTREPO PUERTA</td>
+        <td>1036618742</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$120,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-09</span></td>
+        <td>JULIANA  ZULUAGA</td>
+        <td>103761534</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$258,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-09</span></td>
+        <td>SOFIA   PELAEZ</td>
+        <td>1214739543</td>
+        <td>3113439206</td>
+        <td class="contact-info">SOFIAPELAEZSA@GMAIL.COM</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$195,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-09</span></td>
+        <td>CARMELINDA  VILLEGAS</td>
+        <td>32244839</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$120,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-09</span></td>
+        <td>CLARA   GISANDE</td>
+        <td>43268079</td>
+        <td>3504684541</td>
+        <td class="contact-info">cgisande@gmail.com</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$120,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-09</span></td>
+        <td>NATALIA  DIAZ</td>
+        <td>43876025</td>
+        <td>3187123715</td>
+        <td class="contact-info">NDIAZLUNA712@GMAIL.COM</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$1,760,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-09</span></td>
+        <td>SAMIR FERNANDO VERGARA</td>
+        <td>71386464</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$175,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-10</span></td>
+        <td>NICOLE   PELAEZ  CASTAÑO</td>
+        <td>1021923398</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$195,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-10</span></td>
+        <td>ELISA JARAMILLO PENAGOS</td>
+        <td>1034986123</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$96,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-10</span></td>
+        <td>JULIANA  MORENO</td>
+        <td>1136887931</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$258,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-10</span></td>
+        <td>DANIEL  LOPEZ RUIZ</td>
+        <td>1238938221</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$2,090,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-10</span></td>
+        <td>DANIEL CAMPUZANO</td>
+        <td>98541097</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$120,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-11</span></td>
+        <td>MARIA PAULINA  TRUJILLO</td>
+        <td>1000417205</td>
+        <td>3113759565</td>
+        <td class="contact-info">PAULITRUJILLO8@GMAIL.COM</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$195,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-11</span></td>
+        <td>DANIEL CASTRILLON CUARTAS</td>
+        <td>1037587435</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$2,220,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-12</span></td>
+        <td>Cristian Andres  Quintero Cerquera</td>
+        <td>1020774223</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$2,650,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-13</span></td>
+        <td>MARIA CAMILA  VELEZ</td>
+        <td>1017199385</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$480,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-13</span></td>
+        <td>Jessica Estrada Gaviria</td>
+        <td>1036650405</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$85,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-13</span></td>
+        <td>JULIO  LOPERA</td>
+        <td>70559536</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$120,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-14</span></td>
+        <td>MARIA ALEJANDRA MONTOYA</td>
+        <td>1017262432</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$120,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-14</span></td>
+        <td>LAURA CADAVID SANTIAGO</td>
+        <td>1037649708</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$84,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-14</span></td>
+        <td>VALENTINA   SANTANA  TIRADO</td>
+        <td>1069470492</td>
+        <td>3245046235</td>
+        <td class="contact-info">santanatiradov@gmail.com</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$72,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-14</span></td>
+        <td>ASHELY BOLIVAR</td>
+        <td>1148218938</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$300,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-15</span></td>
+        <td>ANA LUCIA COLLAZOS</td>
+        <td>1053828750</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$208,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-16</span></td>
+        <td>ALEJANDRO CARDONA TAVERA</td>
+        <td>1039465005</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$93,500</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-16</span></td>
+        <td>CAROLINA BERMUDEZ COLORADO</td>
+        <td>1128268952</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$180,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-16</span></td>
+        <td>BEATRIZ RAMIREZ GONZALEZ</td>
+        <td>43876442</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$2,650,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-16</span></td>
+        <td>JUAN PABLO  SIERRA ECHEVERRI</td>
+        <td>98670637</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$108,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-17</span></td>
+        <td>STEPHANIA COY POLANCO</td>
+        <td>1000156767</td>
+        <td>3125358042</td>
+        <td class="contact-info">stephaniacoypolanco@gmail.com</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$480,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-17</span></td>
+        <td>NICOLAS  CUESTA QUINTERO</td>
+        <td>1053839366</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$2,220,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-17</span></td>
+        <td>CAROLINA BERMUDEZ COLORADO</td>
+        <td>1128268952</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$180,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-18</span></td>
+        <td>CAMILA MADRID</td>
+        <td>1000415004</td>
+        <td>3017857070</td>
+        <td class="contact-info">camilamadrid07@hotmail.es</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$930,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-18</span></td>
+        <td>ESTEFANIA VELASQUEZ LOPEZ</td>
+        <td>1037622017</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$270,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-19</span></td>
+        <td>Michelle  Marulanda</td>
+        <td>1144097173</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$2,990,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-19</span></td>
+        <td>JUAN CAMILO ROLDAN VASQUEZ</td>
+        <td>98762812</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$2,365,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-20</span></td>
+        <td>JUAN CAMELO</td>
+        <td>1463057</td>
+        <td>-</td>
+        <td class="contact-info">juancamilo@gmail.com</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$540,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-21</span></td>
+        <td>JOSUE MORENO</td>
+        <td>1091675261</td>
+        <td>3112016027</td>
+        <td class="contact-info">JMORENO@GMAIL.COM</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$72,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-21</span></td>
+        <td>CRISTIAN CALLE</td>
+        <td>1152447950</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$2,190,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-21</span></td>
+        <td>ROBERTO RIVERA DIAZ</td>
+        <td>71790715</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$120,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-21</span></td>
+        <td>TOMAS VILLA</td>
+        <td>98669390</td>
+        <td>3163765243</td>
+        <td class="contact-info">tomasvj@hotmail.com</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$144,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-22</span></td>
+        <td>MARIA PAULINA UPEGUI GIRALDO</td>
+        <td>1040183745</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$2,190,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-22</span></td>
+        <td>IRENE ALVAREZ MASO</td>
+        <td>32564929</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$2,310,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-24</span></td>
+        <td>Lina Luz Berrio   Velasquez</td>
+        <td>1067880465</td>
+        <td>3003556255</td>
+        <td class="contact-info">linaberriov1@gmail.com</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$240,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-24</span></td>
+        <td>YARLIN ROSAURA SIERRA CASTILLO</td>
+        <td>1090491814</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$175,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-26</span></td>
+        <td>Maria Del Mar Chaves  Arango</td>
+        <td>1034998525</td>
+        <td>3176681948</td>
+        <td class="contact-info">mariachaves@montemayor.edu.co</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$2,410,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-28</span></td>
+        <td>SEBASTIAN MORALES</td>
+        <td>1152197505</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$2,220,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-29</span></td>
+        <td>LUIS ADRIAN  BOLIVAR</td>
+        <td>1095804384</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$930,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-29</span></td>
+        <td>Andres Felipe  Giraldo</td>
+        <td>1152445374</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$300,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-30</span></td>
+        <td>ESTEFANIA VELASQUEZ LOPEZ</td>
+        <td>1037622017</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$2,310,000</strong></td>
+      </tr><tr>
+        <td><span class="badge badge-fecha">2026-03-31</span></td>
+        <td>JUAN PABLO LOAIZA TOBON</td>
+        <td>1026159781</td>
+        <td>-</td>
+        <td class="contact-info">-</td>
+        <td><span class="badge badge-sede">15</span></td>
+        <td><strong>$2,220,000</strong></td>
+      </tr></tbody></table></div></body></html>
