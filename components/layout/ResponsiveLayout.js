@@ -13,6 +13,7 @@ export default function ResponsiveLayout({ children }) {
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          style={{ pointerEvents: 'auto' }}
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -20,7 +21,7 @@ export default function ResponsiveLayout({ children }) {
       {/* Hamburger button - mobile only */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="fixed top-3 left-3 z-50 lg:hidden bg-[#111] rounded-lg p-2 shadow-md border border-white/10"
+        className="fixed top-3 left-3 z-[60] lg:hidden bg-[#111] rounded-lg p-2 shadow-md border border-white/10"
         aria-label="Toggle menu"
       >
         <span className="text-white text-xl leading-none">{sidebarOpen ? '✕' : '☰'}</span>
@@ -28,7 +29,7 @@ export default function ResponsiveLayout({ children }) {
 
       {/* Sidebar - fixed on desktop, slide-in on mobile */}
       <aside className={`
-        fixed top-0 left-0 h-screen z-30 transform transition-transform duration-300
+        fixed top-0 left-0 h-screen z-50 lg:z-30 transform transition-transform duration-300
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
         <Sidebar
