@@ -1,5 +1,10 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '../../lib/supabase'
+import { supabase } from '../../../lib/supabase'
+import { getNombreSucursal } from '../../../lib/constants'
+
+// NOTA: Los ingresos financieros provienen de la tabla `facturas`.
+// La tabla `ingresos` en Supabase es un log de acceso al gimnasio (entradas/salidas),
+// no contiene datos de ventas ni valores monetarios.
 
 export async function GET(request) {
   try {
@@ -8,7 +13,7 @@ export async function GET(request) {
     const hasta = searchParams.get('hasta')
     const sede = searchParams.get('sede')
 
-    // Por defecto, último mes
+    // Por defecto, mes actual
     const today = new Date()
     const defaultDesde = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0]
     const defaultHasta = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0]
@@ -16,29 +21,30 @@ export async function GET(request) {
     const fechaDesde = desde || defaultDesde
     const fechaHasta = hasta || defaultHasta
 
+    // Consultar facturas no anuladas en el período
     let query = supabase
-      .from('ingresos')
-      .select('*')
-      .gte('fecha', fechaDesde)
-      .lte('fecha', fechaHasta)
+      .from('facturas')
+      .select('total, fecha_compra, sucursal_codigo, comercial')
+      .gte('fecha_compra', fechaDesde)
+      .lte('fecha_compra', fechaHasta)
+      .eq('estado_anulada', false)
 
     if (sede) {
-      query = query.eq('sucursal', sede)
+      query = query.eq('sucursal_codigo', sede)
     }
 
-    const { data: ingresos, error } = await query
-
+    const { data: facturas, error } = await query
     if (error) throw error
 
     // Total general
-    const total = ingresos?.reduce((acc, i) => acc + (i.valor || 0), 0) || 0
+    const total = facturas?.reduce((acc, f) => acc + (f.total || 0), 0) || 0
 
     // Agrupar por día
     const porDiaMap = {}
-    ingresos?.forEach(i => {
-      const fecha = i.fecha?.split('T')[0]
+    facturas?.forEach(f => {
+      const fecha = f.fecha_compra?.split('T')[0]
       if (fecha) {
-        porDiaMap[fecha] = (porDiaMap[fecha] || 0) + (i.valor || 0)
+        porDiaMap[fecha] = (porDiaMap[fecha] || 0) + (f.total || 0)
       }
     })
     const porDia = Object.entries(porDiaMap)
@@ -47,24 +53,24 @@ export async function GET(request) {
 
     // Agrupar por sucursal
     const porSucursalMap = {}
-    ingresos?.forEach(i => {
-      const suc = i.sucursal || 'Sin sede'
-      porSucursalMap[suc] = (porSucursalMap[suc] || 0) + (i.valor || 0)
+    facturas?.forEach(f => {
+      const suc = String(f.sucursal_codigo || 'Sin sede')
+      porSucursalMap[suc] = (porSucursalMap[suc] || 0) + (f.total || 0)
     })
     const porSucursal = Object.entries(porSucursalMap).map(([sucursal, valor]) => ({
       sucursal,
-      nombre: sucursal === '1' ? 'Poblado' : sucursal === '2' ? 'Amsterdam' : sucursal === '3' ? 'Saboleta' : `Sede ${sucursal}`,
+      nombre: getNombreSucursal(sucursal),
       valor
     }))
 
-    // Top vendedores
+    // Top vendedores (comercial en facturas)
     const porVendedorMap = {}
-    ingresos?.forEach(i => {
-      const vendedor = i.vendedor || 'Sin vendedor'
+    facturas?.forEach(f => {
+      const vendedor = f.comercial || 'Sin vendedor'
       if (!porVendedorMap[vendedor]) {
         porVendedorMap[vendedor] = { valor: 0, ventas: 0 }
       }
-      porVendedorMap[vendedor].valor += (i.valor || 0)
+      porVendedorMap[vendedor].valor += (f.total || 0)
       porVendedorMap[vendedor].ventas += 1
     })
     const topVendedores = Object.entries(porVendedorMap)

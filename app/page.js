@@ -5,7 +5,6 @@ import Link from 'next/link'
 import Card from '../components/ui/Card'
 import Badge from '../components/ui/Badge'
 import Loading from '../components/ui/Loading'
-import Sidebar from '../components/layout/Sidebar'
 import { formatCurrency } from '../lib/utils'
 
 export default function Home() {
@@ -38,121 +37,115 @@ export default function Home() {
 
   if (loading) {
     return (
-      <>
-        <Sidebar />
-        <main className="flex-1 p-8">
-          <Loading text="Cargando dashboard..." />
-        </main>
-      </>
+      <div className="p-8">
+        <Loading text="Cargando dashboard..." />
+      </div>
     )
   }
 
   return (
-    <>
-      <Sidebar />
-      <main className="flex-1 p-8 bg-white">
-        <h2 className="text-2xl font-bold text-pwr-black mb-6">Resumen General</h2>
+    <div className="p-8 bg-white">
+      <h2 className="text-2xl font-bold text-pwr-black mb-6">Resumen General</h2>
 
-        {/* KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card
-            title="Clientes Activos"
-            value={dashboard?.clientes?.activos || 0}
-            subtitle={`Total: ${dashboard?.clientes?.total || 0}`}
-            color="primary"
-          />
-          <Card
-            title="Con Plan Vigente"
-            value={dashboard?.clientes?.conPlan || 0}
-            color="success"
-          />
-          <Card
-            title="Sin Plan"
-            value={dashboard?.clientes?.sinPlan || 0}
-            color="warning"
-          />
-          <Card
-            title="Ingreso Mes"
-            value={formatCurrency(dashboard?.ingresos?.mesActual || 0)}
-            trend={{
-              value: dashboard?.ingresos?.variacion || 0,
-              label: 'vs mes anterior'
-            }}
-            color="info"
-          />
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <Card
+          title="Clientes Activos"
+          value={dashboard?.clientes?.activos || 0}
+          subtitle={`Total: ${dashboard?.clientes?.total || 0}`}
+          color="primary"
+        />
+        <Card
+          title="Con Plan Vigente"
+          value={dashboard?.clientes?.conPlan || 0}
+          color="success"
+        />
+        <Card
+          title="Sin Plan"
+          value={dashboard?.clientes?.sinPlan || 0}
+          color="warning"
+        />
+        <Card
+          title="Ingreso Mes"
+          value={formatCurrency(dashboard?.ingresos?.mesActual || 0)}
+          trend={{
+            value: dashboard?.ingresos?.variacion || 0,
+            label: 'vs mes anterior'
+          }}
+          color="info"
+        />
+      </div>
+
+      {/* Alerta Vencimientos */}
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-bold text-pwr-black">
+            ⚠️ Planes por Vencer (7 días)
+          </h3>
+          <Link 
+            href="/vencimientos"
+            className="text-pwr-red text-sm font-semibold hover:underline"
+          >
+            Ver todos →
+          </Link>
         </div>
 
-        {/* Alerta Vencimientos */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-pwr-black">
-              ⚠️ Planes por Vencer (7 días)
-            </h3>
-            <Link 
-              href="/vencimientos"
-              className="text-pwr-red text-sm font-semibold hover:underline"
-            >
-              Ver todos →
-            </Link>
+        {vencimientos.length === 0 ? (
+          <p className="text-gray-400">No hay planes por vencer en los próximos 7 días</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-100">
+                  <th className="text-left py-3 text-xs font-semibold text-gray-400 uppercase">Cliente</th>
+                  <th className="text-left py-3 text-xs font-semibold text-gray-400 uppercase">Vencimiento</th>
+                  <th className="text-left py-3 text-xs font-semibold text-gray-400 uppercase">Valor</th>
+                  <th className="text-left py-3 text-xs font-semibold text-gray-400 uppercase">Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {vencimientos.slice(0, 5).map(f => {
+                  const status = f.diasRestantes <= 3 
+                    ? { label: `Vence en ${f.diasRestantes} días`, variant: 'danger' }
+                    : { label: `Vence en ${f.diasRestantes} días`, variant: 'warning' }
+
+                  return (
+                    <tr key={f.id} className="border-b border-gray-50 hover:bg-gray-50">
+                      <td className="py-3">
+                        <p className="font-medium text-pwr-black">{f.nombre_completo || f.nombre_cliente}</p>
+                        <p className="text-sm text-gray-400">{f.celular}</p>
+                      </td>
+                      <td className="py-3">
+                        <Badge variant={status.variant}>{status.label}</Badge>
+                      </td>
+                      <td className="py-3 font-semibold text-pwr-black">
+                        {formatCurrency(f.total)}
+                      </td>
+                      <td className="py-3">
+                        <Badge variant="info">Sede {f.sucursal_codigo}</Badge>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
           </div>
+        )}
+      </div>
 
-          {vencimientos.length === 0 ? (
-            <p className="text-gray-400">No hay planes por vencer en los próximos 7 días</p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-100">
-                    <th className="text-left py-3 text-xs font-semibold text-gray-400 uppercase">Cliente</th>
-                    <th className="text-left py-3 text-xs font-semibold text-gray-400 uppercase">Vencimiento</th>
-                    <th className="text-left py-3 text-xs font-semibold text-gray-400 uppercase">Valor</th>
-                    <th className="text-left py-3 text-xs font-semibold text-gray-400 uppercase">Estado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {vencimientos.slice(0, 5).map(f => {
-                    const status = f.diasRestantes <= 3 
-                      ? { label: `Vence en ${f.diasRestantes} días`, variant: 'danger' }
-                      : { label: `Vence en ${f.diasRestantes} días`, variant: 'warning' }
-
-                    return (
-                      <tr key={f.id} className="border-b border-gray-50 hover:bg-gray-50">
-                        <td className="py-3">
-                          <p className="font-medium text-pwr-black">{f.nombre_completo || f.nombre_cliente}</p>
-                          <p className="text-sm text-gray-400">{f.celular}</p>
-                        </td>
-                        <td className="py-3">
-                          <Badge variant={status.variant}>{status.label}</Badge>
-                        </td>
-                        <td className="py-3 font-semibold text-pwr-black">
-                          {formatCurrency(f.total)}
-                        </td>
-                        <td className="py-3">
-                          <Badge variant="info">Sede {f.sucursal_codigo}</Badge>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
+      {/* Sucursales */}
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+        <h3 className="text-lg font-bold text-pwr-black mb-4">🏢 Sucursales</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {dashboard?.sucursales?.map(suc => (
+            <div key={suc.codigo} className="bg-white rounded-lg p-4 border border-gray-100">
+              <p className="text-xs text-gray-400 font-semibold uppercase">{suc.nombre}</p>
+              <p className="text-2xl font-bold text-pwr-black mt-1">{suc.clientes}</p>
+              <p className="text-xs text-gray-300 mt-1">clientes</p>
             </div>
-          )}
+          ))}
         </div>
-
-        {/* Sucursales */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
-          <h3 className="text-lg font-bold text-pwr-black mb-4">🏢 Sucursales</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {dashboard?.sucursales?.map(suc => (
-              <div key={suc.codigo} className="bg-white rounded-lg p-4 border border-gray-100">
-                <p className="text-xs text-gray-400 font-semibold uppercase">{suc.nombre}</p>
-                <p className="text-2xl font-bold text-pwr-black mt-1">{suc.clientes}</p>
-                <p className="text-xs text-gray-300 mt-1">clientes</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </main>
-    </>
+      </div>
+    </div>
   )
 }

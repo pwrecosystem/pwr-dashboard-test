@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '../../lib/supabase'
+import { supabase } from '../../../lib/supabase'
 
 export async function GET(request) {
   try {
@@ -17,7 +17,7 @@ export async function GET(request) {
 
     // Filtros
     if (sede) {
-      query = query.eq('sucursal', sede)
+      query = query.eq('sucursal_codigo', sede)  // campo correcto: sucursal_codigo
     }
     if (estado) {
       query = query.eq('estado', estado)

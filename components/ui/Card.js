@@ -1,9 +1,9 @@
 export default function Card({ title, value, trend, icon, color = 'primary', subtitle }) {
   const borders = {
-    primary: 'border-pwr-red',
-    success: 'border-pwr-black',
-    warning: 'border-pwr-black',
-    info: 'border-pwr-black'
+    primary: 'border-l-red-600',
+    success: 'border-l-green-500',
+    warning: 'border-l-yellow-500',
+    info: 'border-l-blue-500'
   }
 
   return (
@@ -21,7 +21,7 @@ export default function Card({ title, value, trend, icon, color = 'primary', sub
         )}
       </div>
       {trend && (
-        <div className={`mt-4 text-sm font-medium ${trend.value >= 0 ? 'text-pwr-black' : 'text-pwr-red'}`}>
+        <div className={`mt-4 text-sm font-medium ${trend.value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
           {trend.value >= 0 ? '↑' : '↓'} {Math.abs(trend.value)}% {trend.label}
         </div>
       )}
