@@ -61,7 +61,7 @@ export default function SucursalesPage() {
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-bold text-black">{suc.nombre}</h3>
                 <span className="text-xs bg-black text-white px-2 py-1 rounded font-semibold">
-                  Sede {suc.codigo}
+                  #{suc.codigo}
                 </span>
               </div>
               

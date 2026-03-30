@@ -6,6 +6,7 @@ import Card from '../components/ui/Card'
 import Badge from '../components/ui/Badge'
 import Loading from '../components/ui/Loading'
 import { formatCurrency } from '../lib/utils'
+import { getNombreSucursal } from '../lib/constants'
 
 export default function Home() {
   const [dashboard, setDashboard] = useState(null)
@@ -128,7 +129,7 @@ export default function Home() {
                         {formatCurrency(f.total)}
                       </td>
                       <td className="py-3">
-                        <Badge variant="info">Sede {f.sucursal_codigo}</Badge>
+                        <Badge variant="info">{getNombreSucursal(f.sucursal_codigo)}</Badge>
                       </td>
                     </tr>
                   )

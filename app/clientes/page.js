@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Loading from '../../components/ui/Loading'
 import Badge from '../../components/ui/Badge'
-import { SUCURSALES } from '../../lib/constants'
+import { SUCURSALES, getNombreSucursal } from '../../lib/constants'
 
 export default function ClientesPage() {
   const [clientes, setClientes] = useState([])
@@ -129,7 +129,7 @@ export default function ClientesPage() {
                         <p className="text-gray-500 text-xs">{c.correo_electronico || '-'}</p>
                       </td>
                       <td className="py-3 px-4">
-                        <Badge variant="info">{c.nombre_sucursal || `Sede ${c.sucursal_codigo || '-'}`}</Badge>
+                        <Badge variant="info">{c.nombre_sucursal || getNombreSucursal(c.sucursal_codigo)}</Badge>
                       </td>
                       <td className="py-3 px-4">
                         <Badge variant={badge.variant}>{badge.label}</Badge>

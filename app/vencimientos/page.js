@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Loading from '../../components/ui/Loading'
 import Badge from '../../components/ui/Badge'
 import { formatCurrency, formatDate } from '../../lib/utils'
+import { getNombreSucursal } from '../../lib/constants'
 
 export default function VencimientosPage() {
   const [vencimientos, setVencimientos] = useState([])
@@ -108,7 +109,7 @@ export default function VencimientosPage() {
                           <p className="text-gray-500 text-xs">{f.correo || '-'}</p>
                         </td>
                         <td className="py-3 px-4">
-                          <Badge variant="info">Sede {f.sucursal_codigo}</Badge>
+                          <Badge variant="info">{getNombreSucursal(f.sucursal_codigo)}</Badge>
                         </td>
                       </tr>
                     )
