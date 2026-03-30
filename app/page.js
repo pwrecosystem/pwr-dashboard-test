@@ -112,9 +112,10 @@ export default function Home() {
               </thead>
               <tbody>
                 {vencimientos.slice(0, 5).map(f => {
-                  const status = f.diasRestantes <= 3 
-                    ? { label: `Vence en ${f.diasRestantes} días`, variant: 'danger' }
-                    : { label: `Vence en ${f.diasRestantes} días`, variant: 'warning' }
+                  const dias = f.dias_restantes ?? f.diasRestantes ?? 0
+                  const status = dias <= 3 
+                    ? { label: `Vence en ${dias} días`, variant: 'danger' }
+                    : { label: `Vence en ${dias} días`, variant: 'warning' }
 
                   return (
                     <tr key={f.id} className="border-b border-gray-50 hover:bg-gray-50">
