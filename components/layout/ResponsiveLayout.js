@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Sidebar from './Sidebar'
+import Header from './Header'
 
 export default function ResponsiveLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -39,6 +40,7 @@ export default function ResponsiveLayout({ children }) {
 
       {/* Main content - offset by sidebar width */}
       <main className={`min-h-screen min-w-0 w-full overflow-x-hidden transition-all duration-300 ${collapsed ? 'lg:ml-16' : 'lg:ml-60'}`}>
+        <Header />
         {children}
       </main>
     </>
