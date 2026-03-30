@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '../../../lib/supabase'
-import { getNombreSucursal } from '../../../lib/constants'
+import { getNombreSucursal, categorizarServicio } from '../../../lib/constants'
 
 // Helper: obtener set de identificaciones con factura vigente (paginado)
 async function getIdsConPlanVigente() {
@@ -132,6 +132,16 @@ export async function GET() {
       clientes: clientesCount
     }))
 
+    // ── Wellness Amsterdam (sede 15, total histórico)
+    const { data: detallesWellness } = await supabase
+      .from('detalles_factura')
+      .select('descripcion, total, no_factura')
+      .eq('sucursal_codigo', 15)
+
+    const wellnessTotal = detallesWellness
+      ?.filter(d => categorizarServicio(d.descripcion) === 'Wellness')
+      ?.reduce((acc, d) => acc + (d.total || 0), 0) || 0
+
     return NextResponse.json({
       clientes: {
         total: total || 0,
@@ -145,7 +155,10 @@ export async function GET() {
         mesAnterior: ingresoMesAnterior,
         variacion: parseFloat(variacion)
       },
-      sucursales
+      sucursales,
+      wellness: {
+        ingresoTotal: wellnessTotal,
+      }
     })
 
   } catch (error) {

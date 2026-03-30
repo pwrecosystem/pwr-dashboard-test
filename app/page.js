@@ -48,7 +48,7 @@ export default function Home() {
       <h2 className="text-2xl font-bold text-pwr-black mb-6">Resumen General</h2>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
         <Card
           title="Clientes Activos"
           value={dashboard?.clientes?.activos || 0}
@@ -72,6 +72,12 @@ export default function Home() {
             value: dashboard?.ingresos?.variacion || 0,
             label: 'vs mes anterior'
           }}
+          color="info"
+        />
+        <Card
+          title="Wellness Amsterdam"
+          value={formatCurrency(dashboard?.wellness?.ingresoTotal || 0)}
+          subtitle="Total histórico"
           color="info"
         />
       </div>

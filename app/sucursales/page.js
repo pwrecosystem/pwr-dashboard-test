@@ -87,6 +87,23 @@ export default function SucursalesPage() {
                   <p className="text-xs text-gray-500 font-semibold uppercase">Ingresos Mes</p>
                   <p className="text-xl font-bold text-black mt-1">{formatCurrency(suc.ingresos)}</p>
                 </div>
+
+                {suc.desglose && (
+                  <div className="pt-4 border-t border-gray-100">
+                    <p className="text-xs text-gray-500 font-semibold uppercase mb-3">Desglose por Categoría</p>
+                    <div className="space-y-2">
+                      {Object.entries(suc.desglose)
+                        .filter(([, val]) => val > 0)
+                        .sort(([, a], [, b]) => b - a)
+                        .map(([categoria, monto]) => (
+                          <div key={categoria} className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2">
+                            <span className="text-xs font-semibold text-gray-600">{categoria}</span>
+                            <span className="text-xs font-bold text-black">{formatCurrency(monto)}</span>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )

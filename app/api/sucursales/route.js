@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '../../../lib/supabase'
-import { getNombreSucursal } from '../../../lib/constants'
+import { getNombreSucursal, categorizarServicio } from '../../../lib/constants'
 
 // Obtener set de identificaciones con factura vigente (paginado)
 async function getIdsConPlanVigente() {
@@ -92,6 +92,27 @@ export async function GET() {
     const sucursales = Object.values(sucursalesData).sort((a, b) => 
       parseInt(a.codigo) - parseInt(b.codigo)
     )
+
+    // Desglose Amsterdam (sede 15)
+    const { data: detallesAmsterdam } = await supabase
+      .from('detalles_factura')
+      .select('descripcion, total')
+      .eq('sucursal_codigo', 15)
+
+    const desglose = { Wellness: 0, Nutrición: 0, Training: 0, Box: 0, Eventos: 0, Yoga: 0 }
+    detallesAmsterdam?.forEach(d => {
+      const cat = categorizarServicio(d.descripcion)
+      if (desglose[cat] !== undefined) {
+        desglose[cat] += (d.total || 0)
+      } else {
+        desglose[cat] = (d.total || 0)
+      }
+    })
+
+    const amsterdam = sucursales.find(s => s.codigo === '15')
+    if (amsterdam) {
+      amsterdam.desglose = desglose
+    }
 
     return NextResponse.json({ sucursales })
 
