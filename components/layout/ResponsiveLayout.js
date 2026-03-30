@@ -26,9 +26,9 @@ export default function ResponsiveLayout({ children }) {
         <span className="text-white text-xl leading-none">{sidebarOpen ? '✕' : '☰'}</span>
       </button>
 
-      {/* Sidebar - fixed/sticky on desktop, slide-in on mobile */}
-      <div className={`
-        fixed inset-y-0 left-0 z-40 transform transition-transform duration-300
+      {/* Sidebar - fixed on desktop, slide-in on mobile */}
+      <aside className={`
+        fixed top-0 left-0 h-screen z-30 transform transition-transform duration-300
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
         <Sidebar
@@ -36,13 +36,13 @@ export default function ResponsiveLayout({ children }) {
           collapsed={collapsed}
           onToggle={() => setCollapsed(!collapsed)}
         />
-      </div>
+      </aside>
 
       {/* Main content - offset by sidebar width */}
-      <main className={`min-h-screen min-w-0 w-full overflow-x-hidden transition-all duration-300 ${collapsed ? 'lg:ml-16' : 'lg:ml-60'}`}>
+      <div className={`min-h-screen transition-all duration-300 ${collapsed ? 'lg:ml-16' : 'lg:ml-60'}`}>
         <Header />
         {children}
-      </main>
+      </div>
     </>
   )
 }

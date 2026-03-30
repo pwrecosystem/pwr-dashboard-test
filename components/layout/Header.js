@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export default function Header() {
   return (
-    <header className="bg-white border-b border-gray-200 py-3 px-4 lg:py-4 lg:px-6">
+    <header className="bg-white border-b border-gray-200 py-3 pl-14 pr-4 lg:py-4 lg:pl-6 lg:pr-6">
       <div className="flex items-center gap-3">
         <img 
           src="https://powerclub.com.co/cdn/shop/files/Logo_PWR_redes_sociales.jpg?v=1722338689" 
