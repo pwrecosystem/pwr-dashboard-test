@@ -35,6 +35,16 @@
 - `components/` → UI (Card, Badge, Loading) + Layout (Header, Sidebar)
 - `lib/` → supabase.js, utils.js, constants.js
 
+## REGLA FUNDAMENTAL DE DATOS
+**NUNCA confiar en el campo `estado_cliente` de la tabla `clientes`** — está desactualizado.
+- Dice 174 con plan vigente, la realidad son **2,728**
+- Dice 3,003 sin plan, la realidad son **1,020**
+
+Para determinar si un cliente tiene plan vigente:
+→ Cruzar con `facturas` donde `fecha_vencimiento >= hoy` AND `estado_anulada = false`
+Si tiene al menos 1 factura vigente → Con plan vigente
+Si no tiene ninguna → Sin plan vigente
+
 ## Supabase Schema Real
 | Tabla | Registros | Campos clave |
 |-------|-----------|-------------|

@@ -35,13 +35,36 @@ export async function GET() {
     const today = new Date().toISOString().split('T')[0]
     const in7Days = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
 
-    const { count: porVencer7Dias, error: vencimientosError } = await supabase
+    const { data: facturasVencer, error: vencimientosError } = await supabase
       .from('facturas')
-      .select('*', { count: 'exact', head: true })
+      .select('identificacion_cliente, fecha_vencimiento')
       .gte('fecha_vencimiento', today)
       .lte('fecha_vencimiento', in7Days)
       .eq('estado_anulada', false)
     if (vencimientosError) throw vencimientosError
+
+    // Filtrar: excluir clientes que ya tienen una factura con vencimiento posterior
+    let porVencer7Dias = 0
+    if (facturasVencer && facturasVencer.length > 0) {
+      const clientesIdsVencer = [...new Set(facturasVencer.map(f => f.identificacion_cliente))]
+      const { data: facturasRecientesVencer } = await supabase
+        .from('facturas')
+        .select('identificacion_cliente, fecha_vencimiento')
+        .in('identificacion_cliente', clientesIdsVencer)
+        .eq('estado_anulada', false)
+        .order('fecha_vencimiento', { ascending: false })
+
+      const maxVencimientoVencer = {}
+      facturasRecientesVencer?.forEach(f => {
+        if (!maxVencimientoVencer[f.identificacion_cliente] || f.fecha_vencimiento > maxVencimientoVencer[f.identificacion_cliente]) {
+          maxVencimientoVencer[f.identificacion_cliente] = f.fecha_vencimiento
+        }
+      })
+
+      porVencer7Dias = facturasVencer.filter(f =>
+        maxVencimientoVencer[f.identificacion_cliente] === f.fecha_vencimiento
+      ).length
+    }
 
     // ── Ingresos del mes actual (usando facturas, no la tabla ingresos que es log de acceso)
     const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0]

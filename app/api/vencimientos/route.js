@@ -26,8 +26,31 @@ export async function GET(request) {
 
     if (facturasError) throw facturasError
 
+    // Filtrar: excluir clientes que ya tienen una factura con vencimiento posterior
+    const clientesIdsParaFiltrar = [...new Set(facturas.map(f => f.identificacion_cliente))]
+    let facturasFiltradas = facturas
+    if (clientesIdsParaFiltrar.length > 0) {
+      const { data: facturasRecientes } = await supabase
+        .from('facturas')
+        .select('identificacion_cliente, fecha_vencimiento')
+        .in('identificacion_cliente', clientesIdsParaFiltrar)
+        .eq('estado_anulada', false)
+        .order('fecha_vencimiento', { ascending: false })
+
+      const maxVencimiento = {}
+      facturasRecientes?.forEach(f => {
+        if (!maxVencimiento[f.identificacion_cliente] || f.fecha_vencimiento > maxVencimiento[f.identificacion_cliente]) {
+          maxVencimiento[f.identificacion_cliente] = f.fecha_vencimiento
+        }
+      })
+
+      facturasFiltradas = facturas.filter(f =>
+        maxVencimiento[f.identificacion_cliente] === f.fecha_vencimiento
+      )
+    }
+
     // Obtener datos de contacto de los clientes
-    const clientesIds = [...new Set(facturas.map(f => f.identificacion_cliente))]
+    const clientesIds = [...new Set(facturasFiltradas.map(f => f.identificacion_cliente))]
     
     let clientesMap = {}
     if (clientesIds.length > 0) {
@@ -42,7 +65,7 @@ export async function GET(request) {
     }
 
     // Calcular días restantes y enriquecer datos
-    const detalle = facturas.map(f => {
+    const detalle = facturasFiltradas.map(f => {
       const fechaVenc = new Date(f.fecha_vencimiento)
       const hoy = new Date()
       const diffTime = fechaVenc - hoy
