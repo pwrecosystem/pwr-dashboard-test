@@ -2,6 +2,32 @@ import { NextResponse } from 'next/server'
 import { supabase } from '../../../lib/supabase'
 import { getNombreSucursal } from '../../../lib/constants'
 
+// Helper: obtener set de identificaciones con factura vigente (paginado)
+async function getIdsConPlanVigente() {
+  const today = new Date().toISOString().split('T')[0]
+  const PAGE_SIZE = 1000
+  const ids = new Set()
+  let offset = 0
+
+  while (true) {
+    const { data, error } = await supabase
+      .from('facturas')
+      .select('identificacion_cliente')
+      .gte('fecha_vencimiento', today)
+      .eq('estado_anulada', false)
+      .range(offset, offset + PAGE_SIZE - 1)
+
+    if (error) throw error
+    if (!data || data.length === 0) break
+
+    data.forEach(f => ids.add(f.identificacion_cliente))
+    if (data.length < PAGE_SIZE) break
+    offset += PAGE_SIZE
+  }
+
+  return ids
+}
+
 export async function GET() {
   try {
     // ── Clientes: conteo total (count-only, no descarga datos)
@@ -17,19 +43,10 @@ export async function GET() {
       .eq('estado', 'ACTIVO')
     if (activosError) throw activosError
 
-    // Sin plan vigente
-    const { count: sinPlan, error: sinPlanError } = await supabase
-      .from('clientes')
-      .select('*', { count: 'exact', head: true })
-      .eq('estado_cliente', 'Sin plan vigente')
-    if (sinPlanError) throw sinPlanError
-
-    // Con plan vigente
-    const { count: conPlan, error: conPlanError } = await supabase
-      .from('clientes')
-      .select('*', { count: 'exact', head: true })
-      .eq('estado_cliente', 'Con plan vigente')
-    if (conPlanError) throw conPlanError
+    // Con plan / sin plan — fuente de verdad: facturas vigentes
+    const idsConPlan = await getIdsConPlanVigente()
+    const conPlan = idsConPlan.size
+    const sinPlan = (total || 0) - conPlan
 
     // ── Planes por vencer (próximos 7 días)
     const today = new Date().toISOString().split('T')[0]
