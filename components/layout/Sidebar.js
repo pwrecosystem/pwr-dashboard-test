@@ -3,40 +3,123 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
+const IconResumen = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 flex-shrink-0">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+  </svg>
+)
+
+const IconClientes = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 flex-shrink-0">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+  </svg>
+)
+
+const IconVencimientos = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 flex-shrink-0">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+  </svg>
+)
+
+const IconIngresos = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 flex-shrink-0">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+  </svg>
+)
+
+const IconSucursales = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 flex-shrink-0">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
+  </svg>
+)
+
+const IconCortesias = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 flex-shrink-0">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+  </svg>
+)
+
+const IconChevronLeft = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+  </svg>
+)
+
+const IconChevronRight = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+    <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+  </svg>
+)
+
 const menuItems = [
-  { href: '/', label: 'Resumen', icon: '📊' },
-  { href: '/clientes', label: 'Clientes', icon: '👥' },
-  { href: '/vencimientos', label: 'Vencimientos', icon: '⚠️' },
-  { href: '/ingresos', label: 'Ingresos', icon: '💰' },
-  { href: '/sucursales', label: 'Sucursales', icon: '🏢' },
-  { href: '/cortesias', label: 'Cortesías', icon: '🎁' }
+  { href: '/', label: 'Resumen', Icon: IconResumen },
+  { href: '/clientes', label: 'Clientes', Icon: IconClientes },
+  { href: '/vencimientos', label: 'Vencimientos', Icon: IconVencimientos },
+  { href: '/ingresos', label: 'Ingresos', Icon: IconIngresos },
+  { href: '/sucursales', label: 'Sucursales', Icon: IconSucursales },
+  { href: '/cortesias', label: 'Cortesías', Icon: IconCortesias },
 ]
 
-export default function Sidebar({ onNavigate }) {
+export default function Sidebar({ onNavigate, collapsed = false, onToggle }) {
   const pathname = usePathname()
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-100 min-h-screen">
-      <nav className="py-4">
-        {menuItems.map(item => {
-          const isActive = pathname === item.href
+    <aside
+      className="flex flex-col min-h-screen bg-[#111] transition-all duration-300 overflow-hidden"
+      style={{ width: collapsed ? '64px' : '240px' }}
+    >
+      {/* Logo */}
+      <div className={`flex items-center h-16 px-4 border-b border-white/10 ${collapsed ? 'justify-center' : 'gap-3'}`}>
+        <div className="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center flex-shrink-0">
+          <span className="text-white font-black text-xs leading-none">PWR</span>
+        </div>
+        {!collapsed && (
+          <span className="text-white font-bold text-sm tracking-wide">PWR Club</span>
+        )}
+      </div>
+
+      {/* Nav */}
+      <nav className="flex-1 py-4">
+        {menuItems.map(({ href, label, Icon }) => {
+          const isActive = pathname === href
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onNavigate}
-              className={`flex items-center gap-3 px-6 py-3 text-sm font-medium transition-colors border-l-4 ${
-                isActive 
-                  ? 'border-pwr-red text-pwr-red bg-white' 
-                  : 'border-transparent text-gray-500 hover:text-pwr-black hover:bg-gray-50'
-              }`}
-            >
-              <span className="text-lg">{item.icon}</span>
-              {item.label}
-            </Link>
+            <div key={href} className="relative group px-2 mb-1">
+              <Link
+                href={href}
+                onClick={onNavigate}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 border-l-2 ${
+                  isActive
+                    ? 'border-red-500 text-white bg-white/10'
+                    : 'border-transparent text-gray-400 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <Icon />
+                {!collapsed && <span className="truncate">{label}</span>}
+              </Link>
+              {/* Tooltip when collapsed */}
+              {collapsed && (
+                <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50 border border-white/10">
+                  {label}
+                </div>
+              )}
+            </div>
           )
         })}
       </nav>
+
+      {/* Toggle button */}
+      {onToggle && (
+        <div className="px-2 pb-4 border-t border-white/10 pt-3">
+          <button
+            onClick={onToggle}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200 text-sm font-medium ${collapsed ? 'justify-center' : ''}`}
+            aria-label={collapsed ? 'Expandir sidebar' : 'Contraer sidebar'}
+          >
+            {collapsed ? <IconChevronRight /> : <IconChevronLeft />}
+            {!collapsed && <span>Contraer</span>}
+          </button>
+        </div>
+      )}
     </aside>
   )
 }
