@@ -73,16 +73,17 @@ export async function GET() {
     )
     const totalInactivos = clientesInactivos.length
 
-    // Para los primeros 200 inactivos, buscar su última factura
-    const inactivosTop200 = clientesInactivos.slice(0, 200)
-    const inactivosIds = inactivosTop200.map(c => c.identificacion)
+    // Para TODOS los inactivos, buscar su última factura (batches de 500)
+    const inactivosAll = clientesInactivos
+    const inactivosIds = inactivosAll.map(c => c.identificacion)
 
     let ultimaFacturaMap = {}
-    if (inactivosIds.length > 0) {
+    for (let i = 0; i < inactivosIds.length; i += BATCH) {
+      const batch = inactivosIds.slice(i, i + BATCH)
       const { data: facturasInactivos } = await supabase
         .from('facturas')
         .select('identificacion_cliente, nombre_plan, total, fecha_vencimiento')
-        .in('identificacion_cliente', inactivosIds)
+        .in('identificacion_cliente', batch)
         .eq('estado_anulada', false)
         .order('fecha_vencimiento', { ascending: false })
 
@@ -93,7 +94,7 @@ export async function GET() {
       })
     }
 
-    const detalleInactivos = inactivosTop200.map(c => {
+    const detalleInactivos = inactivosAll.map(c => {
       const uf = ultimaFacturaMap[c.identificacion] || {}
       const diasSinPlan = uf.fecha_vencimiento
         ? Math.floor((Date.now() - new Date(uf.fecha_vencimiento).getTime()) / (1000 * 60 * 60 * 24))
@@ -150,7 +151,7 @@ export async function GET() {
       .filter(f => maxVencPreReno[f.identificacion_cliente] === f.fecha_vencimiento)
 
     const totalPreRenovacion = detallePreRenovacionAll.length
-    const detallePreRenovacion = detallePreRenovacionAll.slice(0, 200).map(f => {
+    const detallePreRenovacion = detallePreRenovacionAll.map(f => {
       const cliente = clienteMap[f.identificacion_cliente] || {}
       const diasRestantes = Math.ceil(
         (new Date(f.fecha_vencimiento) - new Date()) / (1000 * 60 * 60 * 24)
@@ -187,18 +188,15 @@ export async function GET() {
     // Fantasmas: tienen plan pero NO aparecen en ingresos recientes
     const fantasmasAll = idsConPlanArray.filter(id => !idsConCheckInReciente.has(id))
     const totalFantasmas = fantasmasAll.length
-    const fantasmasTop200 = fantasmasAll.slice(0, 200)
-
-    // Obtener último check-in de los fantasmas top200
+    // Obtener último check-in de TODOS los fantasmas (batches de 500)
     let ultimoCheckinMap = {}
-    for (let i = 0; i < fantasmasTop200.length; i += BATCH) {
-      const batch = fantasmasTop200.slice(i, i + BATCH)
+    for (let i = 0; i < fantasmasAll.length; i += BATCH) {
+      const batch = fantasmasAll.slice(i, i + BATCH)
       const { data: lastCheckins } = await supabase
         .from('ingresos')
         .select('identificacion, fecha')
         .in('identificacion', batch)
         .order('fecha', { ascending: false })
-        .limit(batch.length * 2) // heurística
 
       lastCheckins?.forEach(ing => {
         if (!ultimoCheckinMap[ing.identificacion]) {
@@ -207,13 +205,14 @@ export async function GET() {
       })
     }
 
-    // Obtener factura vigente de fantasmas para saber su plan
+    // Obtener factura vigente de TODOS los fantasmas (batches de 500)
     let planFantasmaMap = {}
-    if (fantasmasTop200.length > 0) {
+    for (let i = 0; i < fantasmasAll.length; i += BATCH) {
+      const batch = fantasmasAll.slice(i, i + BATCH)
       const { data: facturasVig } = await supabase
         .from('facturas')
         .select('identificacion_cliente, nombre_plan')
-        .in('identificacion_cliente', fantasmasTop200)
+        .in('identificacion_cliente', batch)
         .gte('fecha_vencimiento', today)
         .eq('estado_anulada', false)
         .order('fecha_vencimiento', { ascending: false })
@@ -225,7 +224,7 @@ export async function GET() {
       })
     }
 
-    const detalleFantasmas = fantasmasTop200.map(id => {
+    const detalleFantasmas = fantasmasAll.map(id => {
       const c = clienteMap[id] || {}
       const ultimoCI = ultimoCheckinMap[id] || null
       const diasSinIr = ultimoCI
@@ -274,7 +273,7 @@ export async function GET() {
       })
     }
 
-    const detalleCortesias = cortesiasSinConvertirAll.slice(0, 200).map(c => {
+    const detalleCortesias = cortesiasSinConvertirAll.map(c => {
       const cliente = clienteMap[c.identificacion_cliente] || {}
       return {
         nombre: cliente.nombre_completo || c.nombre_cliente,
