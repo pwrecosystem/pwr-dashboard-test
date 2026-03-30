@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '../../../lib/supabase'
+import { getNombreSucursal } from '../../../lib/constants'
 
 // Obtener set de identificaciones con factura vigente (paginado)
 async function getIdsConPlanVigente() {
@@ -93,11 +94,49 @@ export async function GET(request) {
       idsConPlan = await getIdsConPlanVigente()
     }
 
+    // Obtener facturas vigentes de los clientes en esta página para el nombre del plan
+    const identificaciones = clientes?.map(c => c.identificacion) || []
+    const today = new Date().toISOString().split('T')[0]
+    const { data: facturasVigentes } = await supabase
+      .from('facturas')
+      .select('identificacion_cliente, fecha_vencimiento, id')
+      .in('identificacion_cliente', identificaciones)
+      .gte('fecha_vencimiento', today)
+      .eq('estado_anulada', false)
+      .order('fecha_vencimiento', { ascending: false })
+
+    // Map: cliente -> id de su factura vigente más reciente
+    const facturaMap = {}
+    facturasVigentes?.forEach(f => {
+      if (!facturaMap[f.identificacion_cliente]) {
+        facturaMap[f.identificacion_cliente] = f.id
+      }
+    })
+
+    // Obtener descripción del plan de esas facturas
+    const facturaIds = [...new Set(Object.values(facturaMap))]
+    let planMap = {}
+    if (facturaIds.length > 0) {
+      const { data: detalles } = await supabase
+        .from('detalles_factura')
+        .select('factura_id, descripcion')
+        .in('factura_id', facturaIds)
+        .eq('es_plan', true)
+
+      detalles?.forEach(d => {
+        if (!planMap[d.factura_id]) {
+          planMap[d.factura_id] = d.descripcion
+        }
+      })
+    }
+
     const clientesEnriquecidos = clientes?.map(c => ({
       ...c,
       estado_cliente: idsConPlan.has(String(c.identificacion))
         ? 'Con plan vigente'
-        : 'Sin plan vigente'
+        : 'Sin plan vigente',
+      nombre_sucursal: getNombreSucursal(c.sucursal_codigo),
+      plan_vigente: planMap[facturaMap[c.identificacion]] || null
     })) || []
 
     return NextResponse.json({

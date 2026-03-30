@@ -122,14 +122,14 @@ export default function ClientesPage() {
                       <td className="py-3 px-4 text-sm text-gray-600 font-mono">{c.identificacion}</td>
                       <td className="py-3 px-4">
                         <p className="font-semibold text-black">{c.nombre_completo}</p>
-                        <p className="text-xs text-gray-400">Desde: {c.fecha_ingreso}</p>
+                        <p className="text-xs text-gray-400">{c.plan_vigente || 'Sin plan'}</p>
                       </td>
                       <td className="py-3 px-4 text-sm">
                         <p className="text-gray-800">{c.celular || '-'}</p>
                         <p className="text-gray-500 text-xs">{c.correo_electronico || '-'}</p>
                       </td>
                       <td className="py-3 px-4">
-                        <Badge variant="info">Sede {c.sucursal || '-'}</Badge>
+                        <Badge variant="info">{c.nombre_sucursal || `Sede ${c.sucursal_codigo || '-'}`}</Badge>
                       </td>
                       <td className="py-3 px-4">
                         <Badge variant={badge.variant}>{badge.label}</Badge>
