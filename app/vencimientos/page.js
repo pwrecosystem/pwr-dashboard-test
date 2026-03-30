@@ -5,24 +5,30 @@ import Loading from '../../components/ui/Loading'
 import Badge from '../../components/ui/Badge'
 import Pagination from '../../components/ui/Pagination'
 import { formatCurrency, formatDate } from '../../lib/utils'
-import { getNombreSucursal } from '../../lib/constants'
+import { SUCURSALES, getNombreSucursal } from '../../lib/constants'
 
 export default function VencimientosPage() {
   const [vencimientos, setVencimientos] = useState([])
   const [loading, setLoading] = useState(true)
   const [dias, setDias] = useState(7)
+  const [sede, setSede] = useState('')
+  const [busqueda, setBusqueda] = useState('')
+  const [searchInput, setSearchInput] = useState('')
   const [page, setPage] = useState(1)
   const [perPage, setPerPage] = useState(25)
 
   useEffect(() => {
     loadVencimientos()
     setPage(1)
-  }, [dias])
+  }, [dias, sede, busqueda])
 
   async function loadVencimientos() {
     setLoading(true)
     try {
-      const res = await fetch(`/api/vencimientos?dias=${dias}`)
+      const params = new URLSearchParams({ dias })
+      if (sede) params.set('sede', sede)
+      if (busqueda) params.set('busqueda', busqueda)
+      const res = await fetch(`/api/vencimientos?${params}`)
       const data = await res.json()
       setVencimientos(data.detalle || [])
     } catch (error) {
@@ -41,19 +47,75 @@ export default function VencimientosPage() {
     return { label: `Vence en ${diasRestantes} días`, variant: 'info' }
   }
 
+  function exportCSV() {
+    if (!vencimientos.length) return
+    const headers = ['ID Cliente', 'Nombre', 'Fecha Vencimiento', 'Días Restantes', 'Valor', 'Celular', 'Correo', 'Sede']
+    const rows = vencimientos.map(f => [
+      f.identificacion_cliente,
+      f.nombre_completo || f.nombre_cliente,
+      f.fecha_vencimiento,
+      f.dias_restantes,
+      f.total,
+      f.celular || '',
+      f.correo_electronico || f.correo || '',
+      f.nombre_sucursal || getNombreSucursal(f.sucursal_codigo)
+    ])
+    const csv = [headers, ...rows].map(r => r.map(c => `"${String(c ?? '').replace(/"/g, '""')}"`).join(',')).join('\n')
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `vencimientos_${dias}dias_${new Date().toISOString().slice(0, 10)}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <div className="p-4 lg:p-8 bg-gray-50">
-      <div className="flex items-center justify-between mb-4 lg:mb-6">
-        <h2 className="text-xl lg:text-2xl font-bold text-black">⚠️ Vencimientos</h2>
-        <select
-          value={dias}
-          onChange={(e) => setDias(parseInt(e.target.value))}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-red-600"
-        >
-          <option value={7}>Próximos 7 días</option>
-          <option value={15}>Próximos 15 días</option>
-          <option value={30}>Próximos 30 días</option>
-        </select>
+      <div className="flex flex-col gap-4 mb-4 lg:mb-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl lg:text-2xl font-bold text-black">⚠️ Vencimientos</h2>
+          <button
+            onClick={exportCSV}
+            className="bg-green-600 hover:bg-green-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+          >
+            📥 Exportar CSV
+          </button>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <select
+            value={dias}
+            onChange={(e) => setDias(parseInt(e.target.value))}
+            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-red-600"
+          >
+            <option value={7}>Próximos 7 días</option>
+            <option value={15}>Próximos 15 días</option>
+            <option value={30}>Próximos 30 días</option>
+          </select>
+          <select
+            value={sede}
+            onChange={(e) => setSede(e.target.value)}
+            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-red-600"
+          >
+            <option value="">Todas las sedes</option>
+            {SUCURSALES.map(s => (
+              <option key={s.codigo} value={s.codigo}>{s.nombre}</option>
+            ))}
+          </select>
+          <form onSubmit={(e) => { e.preventDefault(); setBusqueda(searchInput) }} className="flex gap-2">
+            <input
+              type="text"
+              placeholder="Buscar por nombre..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-red-600 w-48"
+            />
+            <button type="submit" className="bg-red-600 hover:bg-red-700 text-white text-sm px-3 py-2 rounded-lg transition-colors">Buscar</button>
+            {busqueda && (
+              <button type="button" onClick={() => { setBusqueda(''); setSearchInput('') }} className="text-sm text-gray-500 hover:text-gray-700 px-2">✕</button>
+            )}
+          </form>
+        </div>
       </div>
 
       {loading ? (
@@ -90,11 +152,12 @@ export default function VencimientosPage() {
                     <th className="text-left py-3 px-3 text-xs font-semibold text-gray-500 uppercase hidden sm:table-cell">Valor</th>
                     <th className="text-left py-3 px-3 text-xs font-semibold text-gray-500 uppercase hidden lg:table-cell">Contacto</th>
                     <th className="text-left py-3 px-3 text-xs font-semibold text-gray-500 uppercase hidden md:table-cell">Sede</th>
+                    <th className="text-left py-3 px-3 text-xs font-semibold text-gray-500 uppercase">WA</th>
                   </tr>
                 </thead>
                 <tbody>
                   {vencimientosPaginados.map((f) => {
-                    const status = getStatus(f.diasRestantes)
+                    const status = getStatus(f.dias_restantes)
                     return (
                       <tr key={f.id} className="border-b border-gray-100 hover:bg-gray-50">
                         <td className="py-3 px-3">
@@ -112,10 +175,19 @@ export default function VencimientosPage() {
                         </td>
                         <td className="py-3 px-3 text-sm hidden lg:table-cell">
                           <p className="text-gray-800">{f.celular || '-'}</p>
-                          <p className="text-gray-500 text-xs">{f.correo || '-'}</p>
+                          <p className="text-gray-500 text-xs">{f.correo_electronico || f.correo || '-'}</p>
                         </td>
                         <td className="py-3 px-3 hidden md:table-cell">
-                          <Badge variant="info">{getNombreSucursal(f.sucursal_codigo)}</Badge>
+                          <Badge variant="info">{f.nombre_sucursal || getNombreSucursal(f.sucursal_codigo)}</Badge>
+                        </td>
+                        <td className="py-3 px-3">
+                          {f.celular ? (
+                            <a href={`https://wa.me/57${f.celular}`} target="_blank" rel="noopener noreferrer" className="text-green-600 hover:text-green-800 text-lg" title="Enviar WhatsApp">
+                              📱
+                            </a>
+                          ) : (
+                            <span className="text-gray-300">—</span>
+                          )}
                         </td>
                       </tr>
                     )
