@@ -125,13 +125,26 @@ export async function GET(request) {
       })
     }
 
+    // Fallback: info directa de factura vigente para clientes sin detalle de plan
+    const facturaInfoMap = {}
+    facturasVigentes?.forEach(f => {
+      if (!facturaInfoMap[f.identificacion_cliente]) {
+        facturaInfoMap[f.identificacion_cliente] = {
+          fecha_vencimiento: f.fecha_vencimiento
+        }
+      }
+    })
+
     const clientesEnriquecidos = clientesFiltrados.map(c => ({
       ...c,
       estado_cliente: idsConPlan.has(String(c.identificacion))
         ? 'Con plan vigente'
         : 'Sin plan vigente',
       nombre_sucursal: getNombreSucursal(c.sucursal_codigo),
-      plan_vigente: planMap[facturaMap[c.identificacion]] || null
+      plan_vigente: planMap[facturaMap[c.identificacion]]
+        || (facturaInfoMap[c.identificacion]
+          ? `Plan vigente (vence ${facturaInfoMap[c.identificacion].fecha_vencimiento})`
+          : null)
     }))
 
     return NextResponse.json({

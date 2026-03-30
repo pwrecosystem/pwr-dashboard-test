@@ -143,7 +143,7 @@ export default function ClientesPage() {
                       <td className="py-3 px-3 text-xs text-gray-600 font-mono hidden sm:table-cell">{c.identificacion}</td>
                       <td className="py-3 px-3">
                         <p className="font-semibold text-black text-sm">{c.nombre_completo}</p>
-                        <p className="text-xs text-gray-400">{c.plan_vigente || 'Sin plan'}</p>
+                        <p className="text-xs text-gray-400">{c.plan_vigente || (c.estado_cliente === 'Con plan vigente' ? 'Plan vigente' : 'Sin plan')}</p>
                       </td>
                       <td className="py-3 px-3 text-sm hidden md:table-cell">
                         <p className="text-gray-800">{c.celular || '-'}</p>
