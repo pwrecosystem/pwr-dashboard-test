@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Loading from '../../components/ui/Loading'
 import Badge from '../../components/ui/Badge'
+import Pagination from '../../components/ui/Pagination'
 import { formatCurrency, formatDate } from '../../lib/utils'
 import { getNombreSucursal } from '../../lib/constants'
 
@@ -10,9 +11,12 @@ export default function VencimientosPage() {
   const [vencimientos, setVencimientos] = useState([])
   const [loading, setLoading] = useState(true)
   const [dias, setDias] = useState(7)
+  const [page, setPage] = useState(1)
+  const [perPage, setPerPage] = useState(25)
 
   useEffect(() => {
     loadVencimientos()
+    setPage(1)
   }, [dias])
 
   async function loadVencimientos() {
@@ -27,6 +31,8 @@ export default function VencimientosPage() {
       setLoading(false)
     }
   }
+
+  const vencimientosPaginados = vencimientos.slice((page - 1) * perPage, page * perPage)
 
   function getStatus(diasRestantes) {
     if (diasRestantes < 0) return { label: 'Vencido', variant: 'danger' }
@@ -87,7 +93,7 @@ export default function VencimientosPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {vencimientos.map((f) => {
+                  {vencimientosPaginados.map((f) => {
                     const status = getStatus(f.diasRestantes)
                     return (
                       <tr key={f.id} className="border-b border-gray-100 hover:bg-gray-50">
@@ -122,6 +128,15 @@ export default function VencimientosPage() {
                 </p>
               )}
             </div>
+            {vencimientos.length > 0 && (
+              <Pagination
+                total={vencimientos.length}
+                page={page}
+                perPage={perPage}
+                onPageChange={setPage}
+                onPerPageChange={setPerPage}
+              />
+            )}
           </div>
         </>
       )}

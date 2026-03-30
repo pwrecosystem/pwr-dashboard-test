@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Pagination from '../../components/ui/Pagination'
 
 const TABS = [
   { id: 'inactivos', label: '🔥 Inactivos', key: 'inactivos' },
@@ -221,6 +222,8 @@ export default function MarketingPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [activeTab, setActiveTab] = useState('inactivos')
+  const [page, setPage] = useState(1)
+  const [perPage, setPerPage] = useState(25)
 
   useEffect(() => {
     fetch('/api/marketing')
@@ -233,9 +236,15 @@ export default function MarketingPage() {
       .finally(() => setLoading(false))
   }, [])
 
+  function changeTab(tab) {
+    setActiveTab(tab)
+    setPage(1)
+  }
+
   const activeTabConfig = TABS.find(t => t.id === activeTab)
   const activeData = data?.[activeTabConfig?.key]?.detalle || []
   const activeTotal = data?.[activeTabConfig?.key]?.total || 0
+  const activeDataPaginado = activeData.slice((page - 1) * perPage, page * perPage)
 
   const csvFilenames = {
     inactivos: 'pwr_inactivos.csv',
@@ -268,7 +277,7 @@ export default function MarketingPage() {
       ) : (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
           <button
-            onClick={() => setActiveTab('inactivos')}
+            onClick={() => changeTab('inactivos')}
             className={`bg-white rounded-xl p-4 border text-left transition-all hover:shadow-md ${activeTab === 'inactivos' ? 'border-red-400 ring-2 ring-red-200' : 'border-gray-200'}`}
           >
             <p className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">🔥 Inactivos</p>
@@ -276,7 +285,7 @@ export default function MarketingPage() {
             <p className="text-xs text-gray-400 mt-1">Sin plan vigente</p>
           </button>
           <button
-            onClick={() => setActiveTab('prerenovacion')}
+            onClick={() => changeTab('prerenovacion')}
             className={`bg-white rounded-xl p-4 border text-left transition-all hover:shadow-md ${activeTab === 'prerenovacion' ? 'border-yellow-400 ring-2 ring-yellow-200' : 'border-gray-200'}`}
           >
             <p className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">⏰ Pre-renovación</p>
@@ -284,7 +293,7 @@ export default function MarketingPage() {
             <p className="text-xs text-gray-400 mt-1">Vencen en 30-60 días</p>
           </button>
           <button
-            onClick={() => setActiveTab('fantasmas')}
+            onClick={() => changeTab('fantasmas')}
             className={`bg-white rounded-xl p-4 border text-left transition-all hover:shadow-md ${activeTab === 'fantasmas' ? 'border-purple-400 ring-2 ring-purple-200' : 'border-gray-200'}`}
           >
             <p className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">💀 Fantasmas</p>
@@ -292,7 +301,7 @@ export default function MarketingPage() {
             <p className="text-xs text-gray-400 mt-1">Con plan, sin check-in +15d</p>
           </button>
           <button
-            onClick={() => setActiveTab('cortesias')}
+            onClick={() => changeTab('cortesias')}
             className={`bg-white rounded-xl p-4 border text-left transition-all hover:shadow-md ${activeTab === 'cortesias' ? 'border-blue-400 ring-2 ring-blue-200' : 'border-gray-200'}`}
           >
             <p className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">🎁 Cortesías</p>
@@ -310,7 +319,7 @@ export default function MarketingPage() {
             {TABS.map(tab => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => changeTab(tab.id)}
                 className={`flex-shrink-0 px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 transition-all whitespace-nowrap ${
                   activeTab === tab.id
                     ? 'border-red-500 text-red-600 bg-red-50'
@@ -328,7 +337,7 @@ export default function MarketingPage() {
           {/* Toolbar */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
             <p className="text-sm text-gray-500">
-              Mostrando {activeData.length} de {activeTotal.toLocaleString('es-CO')} registros
+              {activeData.length} registros en total
             </p>
             <button
               onClick={() => exportCSV(activeData, csvFilenames[activeTab])}
@@ -349,15 +358,24 @@ export default function MarketingPage() {
                 No hay datos para este segmento
               </div>
             ) : activeTab === 'inactivos' ? (
-              <TableInactivos data={activeData} />
+              <TableInactivos data={activeDataPaginado} />
             ) : activeTab === 'prerenovacion' ? (
-              <TablePreRenovacion data={activeData} />
+              <TablePreRenovacion data={activeDataPaginado} />
             ) : activeTab === 'fantasmas' ? (
-              <TableFantasmas data={activeData} />
+              <TableFantasmas data={activeDataPaginado} />
             ) : (
-              <TableCortesias data={activeData} />
+              <TableCortesias data={activeDataPaginado} />
             )}
           </div>
+          {activeData.length > 0 && (
+            <Pagination
+              total={activeData.length}
+              page={page}
+              perPage={perPage}
+              onPageChange={setPage}
+              onPerPageChange={setPerPage}
+            />
+          )}
         </div>
       )}
     </div>

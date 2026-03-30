@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Badge from '../../components/ui/Badge'
 import Loading from '../../components/ui/Loading'
+import Pagination from '../../components/ui/Pagination'
 import { SUCURSALES } from '../../lib/constants'
 
 function KpiCard({ title, value, subtitle, color }) {
@@ -39,6 +40,8 @@ export default function CortesiasPage() {
   const [estado, setEstado] = useState('vigentes')
   const [sede, setSede] = useState('')
   const [busqueda, setBusqueda] = useState('')
+  const [page, setPage] = useState(1)
+  const [perPage, setPerPage] = useState(25)
 
   async function cargar(est, sed) {
     setLoading(true)
@@ -57,12 +60,14 @@ export default function CortesiasPage() {
 
   useEffect(() => {
     cargar(estado, sede)
+    setPage(1)
   }, [estado, sede])
 
   const detalle = data?.detalle || []
   const filtrado = busqueda
     ? detalle.filter(c => c.nombre_cliente?.toLowerCase().includes(busqueda.toLowerCase()))
     : detalle
+  const filtradoPaginado = filtrado.slice((page - 1) * perPage, page * perPage)
 
   return (
     <div className="p-4 lg:p-8 bg-white min-h-screen">
@@ -117,7 +122,7 @@ export default function CortesiasPage() {
           type="text"
           placeholder="Buscar por nombre..."
           value={busqueda}
-          onChange={e => setBusqueda(e.target.value)}
+          onChange={e => { setBusqueda(e.target.value); setPage(1) }}
           className="border border-gray-200 rounded-lg px-3 py-2 text-sm text-pwr-black focus:outline-none focus:ring-2 focus:ring-pwr-red flex-1 min-w-48"
         />
       </div>
@@ -143,7 +148,7 @@ export default function CortesiasPage() {
                 </tr>
               </thead>
               <tbody>
-                {filtrado.map((c, i) => (
+                {filtradoPaginado.map((c, i) => (
                   <tr key={`${c.identificacion_cliente}-${i}`} className="border-b border-gray-50 hover:bg-gray-50">
                     <td className="px-4 py-3">
                       <p className="font-medium text-pwr-black text-sm">{c.nombre_cliente}</p>
@@ -180,9 +185,13 @@ export default function CortesiasPage() {
               </tbody>
             </table>
           </div>
-          <div className="px-4 py-3 border-t border-gray-50 text-xs text-gray-400">
-            {filtrado.length} registros
-          </div>
+          <Pagination
+            total={filtrado.length}
+            page={page}
+            perPage={perPage}
+            onPageChange={setPage}
+            onPerPageChange={setPerPage}
+          />
         </div>
       )}
     </div>

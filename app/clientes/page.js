@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Loading from '../../components/ui/Loading'
 import Badge from '../../components/ui/Badge'
+import Pagination from '../../components/ui/Pagination'
 import { SUCURSALES, getNombreSucursal } from '../../lib/constants'
 
 export default function ClientesPage() {
@@ -11,9 +12,12 @@ export default function ClientesPage() {
   const [filtroSede, setFiltroSede] = useState('')
   const [filtroEstado, setFiltroEstado] = useState('')
   const [busqueda, setBusqueda] = useState('')
+  const [page, setPage] = useState(1)
+  const [perPage, setPerPage] = useState(25)
 
   useEffect(() => {
     loadClientes()
+    setPage(1)
   }, [filtroSede, filtroEstado])
 
   async function loadClientes() {
@@ -35,8 +39,11 @@ export default function ClientesPage() {
   }
 
   function handleBuscar() {
+    setPage(1)
     loadClientes()
   }
+
+  const clientesPaginados = clientes.slice((page - 1) * perPage, page * perPage)
 
   function getEstadoBadge(estadoCliente) {
     if (estadoCliente === 'Con plan vigente') return { label: 'Con plan', variant: 'success' }
@@ -115,7 +122,7 @@ export default function ClientesPage() {
                 </tr>
               </thead>
               <tbody>
-                {clientes.map((c) => {
+                {clientesPaginados.map((c) => {
                   const badge = getEstadoBadge(c.estado_cliente)
                   return (
                     <tr key={c.identificacion} className="border-b border-gray-100 hover:bg-gray-50">
@@ -144,11 +151,16 @@ export default function ClientesPage() {
             )}
           </div>
         )}
+        {!loading && clientes.length > 0 && (
+          <Pagination
+            total={clientes.length}
+            page={page}
+            perPage={perPage}
+            onPageChange={setPage}
+            onPerPageChange={setPerPage}
+          />
+        )}
       </div>
-
-      <p className="text-sm text-gray-500 mt-4">
-        Mostrando {clientes.length} clientes
-      </p>
     </div>
   )
 }
