@@ -27,7 +27,7 @@ export default function SucursalesPage() {
 
   if (loading) {
     return (
-      <div className="p-8 bg-gray-50">
+      <div className="p-4 lg:p-8 bg-gray-50">
         <Loading text="Cargando sucursales..." />
       </div>
     )
@@ -37,8 +37,8 @@ export default function SucursalesPage() {
   const totalIngresos = sucursales.reduce((a, b) => a + (b.ingresos || 0), 0)
 
   return (
-    <div className="p-8 bg-gray-50">
-      <h2 className="text-2xl font-bold text-black mb-6">🏢 Sucursales</h2>
+    <div className="p-4 lg:p-8 bg-gray-50">
+      <h2 className="text-xl lg:text-2xl font-bold text-black mb-4 lg:mb-6">🏢 Sucursales</h2>
 
       {/* Resumen */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -53,7 +53,7 @@ export default function SucursalesPage() {
       </div>
 
       {/* Cards por Sucursal */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
         {sucursales.map((suc) => {
           const porcentaje = totalClientes > 0 ? ((suc.clientes / totalClientes) * 100).toFixed(1) : 0
           return (

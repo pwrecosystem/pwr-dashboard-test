@@ -11,7 +11,7 @@ const menuItems = [
   { href: '/sucursales', label: 'Sucursales', icon: '🏢' }
 ]
 
-export default function Sidebar() {
+export default function Sidebar({ onNavigate }) {
   const pathname = usePathname()
 
   return (
@@ -23,6 +23,7 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={onNavigate}
               className={`flex items-center gap-3 px-6 py-3 text-sm font-medium transition-colors border-l-4 ${
                 isActive 
                   ? 'border-pwr-red text-pwr-red bg-white' 

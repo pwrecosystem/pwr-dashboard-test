@@ -31,16 +31,16 @@ export default function IngresosPage() {
 
   if (loading) {
     return (
-      <div className="p-8 bg-gray-50">
+      <div className="p-4 lg:p-8 bg-gray-50">
         <Loading text="Cargando ingresos..." />
       </div>
     )
   }
 
   return (
-    <div className="p-8 bg-gray-50">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-black">💰 Ingresos</h2>
+    <div className="p-4 lg:p-8 bg-gray-50">
+      <div className="flex items-center justify-between mb-4 lg:mb-6">
+        <h2 className="text-xl lg:text-2xl font-bold text-black">💰 Ingresos</h2>
         <select
           value={filtroSede}
           onChange={(e) => setFiltroSede(e.target.value)}

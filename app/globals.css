@@ -13,4 +13,5 @@ body {
   font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: var(--pwr-white);
   color: var(--pwr-black);
+  overflow-x: hidden;
 }

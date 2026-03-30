@@ -36,9 +36,9 @@ export default function VencimientosPage() {
   }
 
   return (
-    <div className="p-8 bg-gray-50">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-black">⚠️ Vencimientos</h2>
+    <div className="p-4 lg:p-8 bg-gray-50">
+      <div className="flex items-center justify-between mb-4 lg:mb-6">
+        <h2 className="text-xl lg:text-2xl font-bold text-black">⚠️ Vencimientos</h2>
         <select
           value={dias}
           onChange={(e) => setDias(parseInt(e.target.value))}
@@ -55,7 +55,7 @@ export default function VencimientosPage() {
       ) : (
         <>
           {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6 mb-4 lg:mb-6">
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
               <p className="text-xs text-gray-500 font-semibold uppercase">Total por vencer</p>
               <p className="text-3xl font-bold text-black mt-2">{vencimientos.length}</p>
@@ -78,12 +78,12 @@ export default function VencimientosPage() {
               <table className="w-full">
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
-                    <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Cliente</th>
-                    <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Vencimiento</th>
-                    <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Días</th>
-                    <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Valor</th>
-                    <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Contacto</th>
-                    <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Sede</th>
+                    <th className="text-left py-3 px-3 text-xs font-semibold text-gray-500 uppercase">Cliente</th>
+                    <th className="text-left py-3 px-3 text-xs font-semibold text-gray-500 uppercase hidden sm:table-cell">Vencimiento</th>
+                    <th className="text-left py-3 px-3 text-xs font-semibold text-gray-500 uppercase">Días</th>
+                    <th className="text-left py-3 px-3 text-xs font-semibold text-gray-500 uppercase hidden sm:table-cell">Valor</th>
+                    <th className="text-left py-3 px-3 text-xs font-semibold text-gray-500 uppercase hidden lg:table-cell">Contacto</th>
+                    <th className="text-left py-3 px-3 text-xs font-semibold text-gray-500 uppercase hidden md:table-cell">Sede</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -91,24 +91,24 @@ export default function VencimientosPage() {
                     const status = getStatus(f.diasRestantes)
                     return (
                       <tr key={f.id} className="border-b border-gray-100 hover:bg-gray-50">
-                        <td className="py-3 px-4">
-                          <p className="font-semibold text-black">{f.nombre_completo || f.nombre_cliente}</p>
+                        <td className="py-3 px-3">
+                          <p className="font-semibold text-black text-sm">{f.nombre_completo || f.nombre_cliente}</p>
                           <p className="text-xs text-gray-400 font-mono">ID: {f.identificacion_cliente}</p>
                         </td>
-                        <td className="py-3 px-4">
+                        <td className="py-3 px-3 hidden sm:table-cell">
                           <span className="text-sm text-gray-800">{formatDate(f.fecha_vencimiento)}</span>
                         </td>
-                        <td className="py-3 px-4">
+                        <td className="py-3 px-3">
                           <Badge variant={status.variant}>{status.label}</Badge>
                         </td>
-                        <td className="py-3 px-4 font-semibold text-black">
+                        <td className="py-3 px-3 font-semibold text-black text-sm hidden sm:table-cell">
                           {formatCurrency(f.total)}
                         </td>
-                        <td className="py-3 px-4 text-sm">
+                        <td className="py-3 px-3 text-sm hidden lg:table-cell">
                           <p className="text-gray-800">{f.celular || '-'}</p>
                           <p className="text-gray-500 text-xs">{f.correo || '-'}</p>
                         </td>
-                        <td className="py-3 px-4">
+                        <td className="py-3 px-3 hidden md:table-cell">
                           <Badge variant="info">{getNombreSucursal(f.sucursal_codigo)}</Badge>
                         </td>
                       </tr>

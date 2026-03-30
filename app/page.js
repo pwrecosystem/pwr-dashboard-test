@@ -38,18 +38,18 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="p-8">
+      <div className="p-4 lg:p-8">
         <Loading text="Cargando dashboard..." />
       </div>
     )
   }
 
   return (
-    <div className="p-8 bg-white">
-      <h2 className="text-2xl font-bold text-pwr-black mb-6">Resumen General</h2>
+    <div className="p-4 lg:p-8 bg-white">
+      <h2 className="text-xl lg:text-2xl font-bold text-pwr-black mb-4 lg:mb-6">Resumen General</h2>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 lg:gap-6 mb-6 lg:mb-8">
         <Card
           title="Clientes Activos"
           value={dashboard?.clientes?.activos || 0}
@@ -143,7 +143,7 @@ export default function Home() {
       {/* Sucursales */}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
         <h3 className="text-lg font-bold text-pwr-black mb-4">🏢 Sucursales</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {dashboard?.sucursales?.map(suc => (
             <div key={suc.codigo} className="bg-white rounded-lg p-4 border border-gray-100">
               <p className="text-xs text-gray-400 font-semibold uppercase">{suc.nombre}</p>
