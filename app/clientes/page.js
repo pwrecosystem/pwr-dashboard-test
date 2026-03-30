@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Loading from '../../components/ui/Loading'
 import Badge from '../../components/ui/Badge'
 import Pagination from '../../components/ui/Pagination'
@@ -8,6 +8,7 @@ import { SUCURSALES, getNombreSucursal } from '../../lib/constants'
 
 export default function ClientesPage() {
   const [clientes, setClientes] = useState([])
+  const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
   const [filtroSede, setFiltroSede] = useState('')
   const [filtroPlan, setFiltroPlan] = useState('')
@@ -16,12 +17,7 @@ export default function ClientesPage() {
   const [page, setPage] = useState(1)
   const [perPage, setPerPage] = useState(25)
 
-  useEffect(() => {
-    loadClientes()
-    setPage(1)
-  }, [filtroSede, filtroPlan, filtroGenero])
-
-  async function loadClientes() {
+  const loadClientes = useCallback(async (currentPage, currentPerPage) => {
     setLoading(true)
     try {
       const params = new URLSearchParams()
@@ -29,23 +25,44 @@ export default function ClientesPage() {
       if (filtroPlan) params.set('plan', filtroPlan)
       if (filtroGenero) params.set('genero', filtroGenero)
       if (busqueda) params.set('busqueda', busqueda)
+      params.set('limit', String(currentPerPage))
+      params.set('offset', String((currentPage - 1) * currentPerPage))
 
       const res = await fetch(`/api/clientes?${params}`)
       const data = await res.json()
       setClientes(data.clientes || [])
+      setTotal(data.total || 0)
     } catch (error) {
       console.error('Error:', error)
     } finally {
       setLoading(false)
     }
-  }
+  }, [filtroSede, filtroPlan, filtroGenero, busqueda])
+
+  // Reload when filters change — reset to page 1
+  useEffect(() => {
+    setPage(1)
+    loadClientes(1, perPage)
+  }, [filtroSede, filtroPlan, filtroGenero]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Reload when page or perPage changes
+  useEffect(() => {
+    loadClientes(page, perPage)
+  }, [page, perPage]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleBuscar() {
     setPage(1)
-    loadClientes()
+    loadClientes(1, perPage)
   }
 
-  const clientesPaginados = clientes.slice((page - 1) * perPage, page * perPage)
+  function handlePageChange(newPage) {
+    setPage(newPage)
+  }
+
+  function handlePerPageChange(newPerPage) {
+    setPerPage(newPerPage)
+    setPage(1)
+  }
 
   function getEstadoBadge(estadoCliente) {
     if (estadoCliente === 'Con plan vigente') return { label: 'Con plan', variant: 'success' }
@@ -136,7 +153,7 @@ export default function ClientesPage() {
                 </tr>
               </thead>
               <tbody>
-                {clientesPaginados.map((c) => {
+                {clientes.map((c) => {
                   const badge = getEstadoBadge(c.estado_cliente)
                   return (
                     <tr key={c.identificacion} className="border-b border-gray-100 hover:bg-gray-50">
@@ -165,13 +182,13 @@ export default function ClientesPage() {
             )}
           </div>
         )}
-        {!loading && clientes.length > 0 && (
+        {!loading && total > 0 && (
           <Pagination
-            total={clientes.length}
+            total={total}
             page={page}
             perPage={perPage}
-            onPageChange={setPage}
-            onPerPageChange={setPerPage}
+            onPageChange={handlePageChange}
+            onPerPageChange={handlePerPageChange}
           />
         )}
       </div>
