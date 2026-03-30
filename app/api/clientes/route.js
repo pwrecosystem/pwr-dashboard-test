@@ -32,42 +32,29 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url)
     const sede = searchParams.get('sede')
-    const estado = searchParams.get('estado')
-    const estadoCliente = searchParams.get('estado_cliente')
+    const plan = searchParams.get('plan') // 'con_plan' | 'sin_plan' | null
+    const genero = searchParams.get('genero')
     const busqueda = searchParams.get('busqueda')
-    const limit = parseInt(searchParams.get('limit') || '100')
+    const limit = parseInt(searchParams.get('limit') || '5000')
 
-    // Determinar si se filtra por plan vigente (requiere cruzar con facturas)
-    const filtroPlan = estadoCliente === 'Con plan vigente' || estadoCliente === 'Sin plan vigente'
-    let idsConPlan = null
-
-    if (filtroPlan) {
-      idsConPlan = await getIdsConPlanVigente()
-    }
+    // Siempre obtener IDs con plan vigente (necesario para enriquecer + filtro)
+    let idsConPlan = await getIdsConPlanVigente()
 
     let query = supabase
       .from('clientes')
       .select('*', { count: 'exact' })
-      .limit(limit)
 
-    // Filtros
+    // No aplicar limit de Supabase si vamos a filtrar en JS por plan
+    if (!plan) {
+      query = query.limit(limit)
+    }
+
+    // Filtros en query
     if (sede) {
       query = query.eq('sucursal_codigo', sede)
     }
-    if (estado) {
-      query = query.eq('estado', estado)
-    }
-    if (filtroPlan && idsConPlan) {
-      const idsArray = [...idsConPlan]
-      if (estadoCliente === 'Con plan vigente') {
-        query = query.in('identificacion', idsArray)
-      } else {
-        // Sin plan: excluir los que tienen plan vigente
-        query = query.not('identificacion', 'in', `(${idsArray.join(',')})`)
-      }
-    } else if (estadoCliente) {
-      // Fallback para otros valores de estado_cliente
-      query = query.eq('estado_cliente', estadoCliente)
+    if (genero) {
+      query = query.eq('genero', genero)
     }
     if (busqueda) {
       // Búsqueda por nombre o identificación
@@ -89,13 +76,21 @@ export async function GET(request) {
 
     if (error) throw error
 
-    // Enriquecer cada cliente con su estado real basado en facturas
-    if (!idsConPlan) {
-      idsConPlan = await getIdsConPlanVigente()
+    // Filtrar por plan en JS (evita límites de Supabase con .in() para miles de IDs)
+    let clientesFiltrados = clientes || []
+    if (plan === 'con_plan') {
+      clientesFiltrados = clientesFiltrados.filter(c => idsConPlan.has(String(c.identificacion)))
+    } else if (plan === 'sin_plan') {
+      clientesFiltrados = clientesFiltrados.filter(c => !idsConPlan.has(String(c.identificacion)))
+    }
+
+    // Aplicar limit después del filtro por plan
+    if (plan) {
+      clientesFiltrados = clientesFiltrados.slice(0, limit)
     }
 
     // Obtener facturas vigentes de los clientes en esta página para el nombre del plan
-    const identificaciones = clientes?.map(c => c.identificacion) || []
+    const identificaciones = clientesFiltrados.map(c => c.identificacion)
     const today = new Date().toISOString().split('T')[0]
     const { data: facturasVigentes } = await supabase
       .from('facturas')
@@ -130,17 +125,17 @@ export async function GET(request) {
       })
     }
 
-    const clientesEnriquecidos = clientes?.map(c => ({
+    const clientesEnriquecidos = clientesFiltrados.map(c => ({
       ...c,
       estado_cliente: idsConPlan.has(String(c.identificacion))
         ? 'Con plan vigente'
         : 'Sin plan vigente',
       nombre_sucursal: getNombreSucursal(c.sucursal_codigo),
       plan_vigente: planMap[facturaMap[c.identificacion]] || null
-    })) || []
+    }))
 
     return NextResponse.json({
-      total: count || clientesEnriquecidos.length,
+      total: clientesEnriquecidos.length,
       clientes: clientesEnriquecidos
     })
 

@@ -10,7 +10,8 @@ export default function ClientesPage() {
   const [clientes, setClientes] = useState([])
   const [loading, setLoading] = useState(true)
   const [filtroSede, setFiltroSede] = useState('')
-  const [filtroEstado, setFiltroEstado] = useState('')
+  const [filtroPlan, setFiltroPlan] = useState('')
+  const [filtroGenero, setFiltroGenero] = useState('')
   const [busqueda, setBusqueda] = useState('')
   const [page, setPage] = useState(1)
   const [perPage, setPerPage] = useState(25)
@@ -18,14 +19,15 @@ export default function ClientesPage() {
   useEffect(() => {
     loadClientes()
     setPage(1)
-  }, [filtroSede, filtroEstado])
+  }, [filtroSede, filtroPlan, filtroGenero])
 
   async function loadClientes() {
     setLoading(true)
     try {
       const params = new URLSearchParams()
       if (filtroSede) params.set('sede', filtroSede)
-      if (filtroEstado) params.set('estado', filtroEstado)
+      if (filtroPlan) params.set('plan', filtroPlan)
+      if (filtroGenero) params.set('genero', filtroGenero)
       if (busqueda) params.set('busqueda', busqueda)
 
       const res = await fetch(`/api/clientes?${params}`)
@@ -57,7 +59,7 @@ export default function ClientesPage() {
 
       {/* Filtros */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 mb-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Sede</label>
             <select
@@ -72,15 +74,27 @@ export default function ClientesPage() {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Estado</label>
+            <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Plan</label>
             <select
-              value={filtroEstado}
-              onChange={(e) => setFiltroEstado(e.target.value)}
+              value={filtroPlan}
+              onChange={(e) => setFiltroPlan(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-red-600"
             >
               <option value="">Todos</option>
-              <option value="ACTIVO">Activo</option>
-              <option value="INACTIVO">Inactivo</option>
+              <option value="con_plan">Con plan vigente</option>
+              <option value="sin_plan">Sin plan</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Género</label>
+            <select
+              value={filtroGenero}
+              onChange={(e) => setFiltroGenero(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-red-600"
+            >
+              <option value="">Todos</option>
+              <option value="FEMENINO">Femenino</option>
+              <option value="MASCULINO">Masculino</option>
             </select>
           </div>
           <div>
@@ -118,7 +132,7 @@ export default function ClientesPage() {
                   <th className="text-left py-3 px-3 text-xs font-semibold text-gray-500 uppercase">Cliente</th>
                   <th className="text-left py-3 px-3 text-xs font-semibold text-gray-500 uppercase hidden md:table-cell">Contacto</th>
                   <th className="text-left py-3 px-3 text-xs font-semibold text-gray-500 uppercase hidden sm:table-cell">Sede</th>
-                  <th className="text-left py-3 px-3 text-xs font-semibold text-gray-500 uppercase">Estado</th>
+                  <th className="text-left py-3 px-3 text-xs font-semibold text-gray-500 uppercase">Plan</th>
                 </tr>
               </thead>
               <tbody>
