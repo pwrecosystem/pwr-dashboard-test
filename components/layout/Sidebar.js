@@ -8,7 +8,8 @@ const menuItems = [
   { href: '/clientes', label: 'Clientes', icon: '👥' },
   { href: '/vencimientos', label: 'Vencimientos', icon: '⚠️' },
   { href: '/ingresos', label: 'Ingresos', icon: '💰' },
-  { href: '/sucursales', label: 'Sucursales', icon: '🏢' }
+  { href: '/sucursales', label: 'Sucursales', icon: '🏢' },
+  { href: '/cortesias', label: 'Cortesías', icon: '🎁' }
 ]
 
 export default function Sidebar({ onNavigate }) {

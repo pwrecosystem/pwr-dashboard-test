@@ -132,6 +132,17 @@ export async function GET() {
       clientes: clientesCount
     }))
 
+    // ── Cortesías vigentes + sin plan
+    const { data: cortesiasVigentes, error: cortesiasError } = await supabase
+      .from('cortesias')
+      .select('identificacion_cliente')
+      .eq('estado_anulada', false)
+      .gte('fecha_vencimiento', today)
+    if (cortesiasError) throw cortesiasError
+
+    const cortesiasVigentesList = cortesiasVigentes || []
+    const cortesiasSinPlan = cortesiasVigentesList.filter(c => !idsConPlan.has(c.identificacion_cliente)).length
+
     // ── Wellness Amsterdam (sede 15, total histórico)
     const { data: detallesWellness } = await supabase
       .from('detalles_factura')
@@ -156,6 +167,10 @@ export async function GET() {
         variacion: parseFloat(variacion)
       },
       sucursales,
+      cortesias: {
+        vigentes: cortesiasVigentesList.length,
+        sinPlan: cortesiasSinPlan
+      },
       wellness: {
         ingresoTotal: wellnessTotal,
       }

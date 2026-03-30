@@ -51,10 +51,10 @@ export default function Home() {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 lg:gap-6 mb-6 lg:mb-8">
         <Card
-          title="Clientes Activos"
-          value={dashboard?.clientes?.activos || 0}
-          subtitle={`Total: ${dashboard?.clientes?.total || 0}`}
-          color="primary"
+          title="Cortesías sin convertir"
+          value={dashboard?.cortesias?.sinPlan || 0}
+          subtitle={`De ${dashboard?.cortesias?.vigentes || 0} vigentes`}
+          color="warning"
         />
         <Card
           title="Con Plan Vigente"
