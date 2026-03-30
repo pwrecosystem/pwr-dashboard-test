@@ -65,7 +65,7 @@ export default function Sidebar({ onNavigate, collapsed = false, onToggle }) {
 
   return (
     <aside
-      className="flex flex-col min-h-screen bg-[#111] transition-all duration-300 overflow-hidden"
+      className="flex flex-col h-screen sticky top-0 bg-[#111] transition-all duration-300 overflow-hidden"
       style={{ width: collapsed ? '64px' : '240px' }}
     >
       {/* Logo */}
